@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Student Time Table Generator</title>
+
+    <style>
+
+        body{
+            font-family: Arial, sans-serif;
+            background: #eef2f7;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container{
+            width: 90%;
+            margin: auto;
+            margin-top: 40px;
+        }
+
+        h1{
+            color: #0d47a1;
+            margin-bottom: 20px;
+        }
+
+        .card{
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.15);
+        }
+
+        input{
+            width: 70%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid gray;
+            font-size: 16px;
+        }
+
+        button{
+            background: #1976d2;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover{
+            background: #0d47a1;
+        }
+
+        table{
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+        }
+
+        th{
+            background: #1565c0;
+            color: white;
+            padding: 12px;
+        }
+
+        td{
+            padding: 12px;
+            border: 1px solid #ccc;
+        }
+
+        tr:nth-child(even){
+            background: #f5f5f5;
+        }
+
+        .footer{
+            margin-top: 30px;
+            color: gray;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>🎓 Student Time Table Generator</h1>
+
+        <form method="POST">
+
+            <h3>Enter Subjects (comma separated)</h3>
+
+            <input
+                type="text"
+                name="subjects"
+                placeholder="AI, Maths, Physics, Chemistry, DBMS">
+
+            <br><br>
+
+            <button type="submit">
+                Generate Timetable
+            </button>
+
+        </form>
+
+    </div>
+
+    {% if timetable %}
+
+    <div class="card" style="margin-top:20px;">
+
+        <h2>Generated Weekly Time Table</h2>
+
+        <table>
+
+            <tr>
+                <th>Time</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+            </tr>
+
+            {% for row in timetable %}
+
+            <tr>
+
+                <td><b>{{ row.time }}</b></td>
+
+                <td>{{ row.Monday }}</td>
+                <td>{{ row.Tuesday }}</td>
+                <td>{{ row.Wednesday }}</td>
+                <td>{{ row.Thursday }}</td>
+                <td>{{ row.Friday }}</td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    </div>
+
+    {% endif %}
+
+    <div class="footer">
+
+        <p>Developed for College Project</p>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
