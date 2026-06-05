@@ -8,399 +8,144 @@
     <meta name="viewport"
     content="width=device-width, initial-scale=1.0">
 
-    <title>
-        Student Time Table Generator
-    </title>
+    <title>Student Timetable Generator</title>
 
     <link rel="stylesheet"
     href="{{ url_for('static', filename='style.css') }}">
+
+    <script defer
+    src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <!-- PWA SUPPORT -->
+
+    <link rel="manifest"
+    href="/static/manifest.json">
+
+    <meta name="theme-color"
+    content="#1565c0">
+
+    <link rel="apple-touch-icon"
+    href="/static/icon.png">
 
 </head>
 
 <body>
 
-<div class="main-container">
+    <div class="container">
 
-    <!-- ========================= -->
-    <!-- TOP NAVBAR -->
-    <!-- ========================= -->
-
-    <div class="top-navbar">
-
-        <div>
-
-            <h1>
-                🎓 Student Time Table Generator
-            </h1>
-
-            <p>
-                Professional College Scheduling System
-            </p>
-
-        </div>
+        <h1>
+            🎓 Student Timetable Generator
+        </h1>
 
         <button onclick="toggleDarkMode()">
-
-            🌙 Dark Mode
-
+            🌙 Toggle Dark Mode
         </button>
 
-    </div>
+        <form method="POST">
 
+            <!-- ACADEMIC DETAILS -->
 
-    <!-- ========================= -->
-    <!-- MAIN FORM -->
-    <!-- ========================= -->
+            <div class="card">
 
-    <form method="POST">
+                <h2>Academic Information</h2>
 
+                <input type="text"
+                name="college"
+                placeholder="College Name">
 
-        <!-- ========================= -->
-        <!-- ACADEMIC INFO -->
-        <!-- ========================= -->
+                <input type="text"
+                name="department"
+                placeholder="Department / Branch">
 
-        <div class="card">
+                <input type="text"
+                name="semester"
+                placeholder="Semester">
 
-            <h2>
-                Academic Information
-            </h2>
+                <input type="text"
+                name="section"
+                placeholder="Section">
 
-            <div class="form-grid">
-
-                <div>
-
-                    <label>
-                        College Name
-                    </label>
-
-                    <input type="text"
-                    name="college"
-                    placeholder="Enter College Name">
-
-                </div>
-
-                <div>
-
-                    <label>
-                        Department
-                    </label>
-
-                    <select name="department">
-
-                        <option>AIML</option>
-                        <option>CSE</option>
-                        <option>ISE</option>
-                        <option>ECE</option>
-                        <option>EEE</option>
-                        <option>MECH</option>
-
-                    </select>
-
-                </div>
-
-                <div>
-
-                    <label>
-                        Semester
-                    </label>
-
-                    <select name="semester">
-
-                        <option>Semester 1</option>
-                        <option>Semester 2</option>
-                        <option>Semester 3</option>
-                        <option>Semester 4</option>
-                        <option>Semester 5</option>
-                        <option>Semester 6</option>
-                        <option>Semester 7</option>
-                        <option>Semester 8</option>
-
-                    </select>
-
-                </div>
-
-                <div>
-
-                    <label>
-                        Section
-                    </label>
-
-                    <input type="text"
-                    name="section"
-                    placeholder="A">
-
-                </div>
-
-                <div>
-
-                    <label>
-                        Academic Year
-                    </label>
-
-                    <input type="text"
-                    name="year"
-                    placeholder="2025-2026">
-
-                </div>
-
-                <div>
-
-                    <label>
-                        Classroom Number
-                    </label>
-
-                    <input type="text"
-                    name="classroom"
-                    placeholder="B-204">
-
-                </div>
+                <input type="text"
+                name="classroom"
+                placeholder="Classroom Number">
 
             </div>
 
-        </div>
 
+            <!-- SUBJECTS -->
 
+            <div class="card">
 
-        <!-- ========================= -->
-        <!-- SUBJECT DETAILS -->
-        <!-- ========================= -->
+                <h2>Subjects</h2>
 
-        <div class="card">
+                <table id="subjectTable">
 
-            <h2>
-                Subject Details
-            </h2>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Code</th>
+                        <th>Professor</th>
+                        <th>Hours</th>
+                    </tr>
 
-            <table class="input-table"
-            id="subjectTable">
+                    <!-- 8 SUBJECTS -->
 
-                <tr>
+                    <tr>
+                        <td><input type="text" name="subject1"></td>
+                        <td><input type="text" name="code1"></td>
+                        <td><input type="text" name="faculty1"></td>
+                        <td><input type="number" name="hours1"></td>
+                    </tr>
 
-                    <th>Subject Name</th>
-                    <th>Subject Code</th>
-                    <th>Professor Name</th>
-                    <th>Weekly Hours</th>
+                    <tr>
+                        <td><input type="text" name="subject2"></td>
+                        <td><input type="text" name="code2"></td>
+                        <td><input type="text" name="faculty2"></td>
+                        <td><input type="number" name="hours2"></td>
+                    </tr>
 
-                </tr>
+                    <tr>
+                        <td><input type="text" name="subject3"></td>
+                        <td><input type="text" name="code3"></td>
+                        <td><input type="text" name="faculty3"></td>
+                        <td><input type="number" name="hours3"></td>
+                    </tr>
 
-                <tr>
-                    <td>
-                        <input type="text"
-                        name="subject1"
-                        placeholder="Artificial Intelligence">
-                    </td>
+                    <tr>
+                        <td><input type="text" name="subject4"></td>
+                        <td><input type="text" name="code4"></td>
+                        <td><input type="text" name="faculty4"></td>
+                        <td><input type="number" name="hours4"></td>
+                    </tr>
 
-                    <td>
-                        <input type="text"
-                        name="code1"
-                        placeholder="AIML301">
-                    </td>
+                    <tr>
+                        <td><input type="text" name="subject5"></td>
+                        <td><input type="text" name="code5"></td>
+                        <td><input type="text" name="faculty5"></td>
+                        <td><input type="number" name="hours5"></td>
+                    </tr>
 
-                    <td>
-                        <input type="text"
-                        name="faculty1"
-                        placeholder="Dr Kumar">
-                    </td>
+                    <tr>
+                        <td><input type="text" name="subject6"></td>
+                        <td><input type="text" name="code6"></td>
+                        <td><input type="text" name="faculty6"></td>
+                        <td><input type="number" name="hours6"></td>
+                    </tr>
 
-                    <td>
-                        <input type="number"
-                        name="hours1"
-                        placeholder="5">
-                    </td>
-                </tr>
+                    <tr>
+                        <td><input type="text" name="subject7"></td>
+                        <td><input type="text" name="code7"></td>
+                        <td><input type="text" name="faculty7"></td>
+                        <td><input type="number" name="hours7"></td>
+                    </tr>
 
+                    <tr>
+                        <td><input type="text" name="subject8"></td>
+                        <td><input type="text" name="code8"></td>
+                        <td><input type="text" name="faculty8"></td>
+                        <td><input type="number" name="hours8"></td>
+                    </tr>
 
-                <tr>
-                    <td>
-                        <input type="text"
-                        name="subject2"
-                        placeholder="Machine Learning">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                        name="code2"
-                        placeholder="AIML302">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                        name="faculty2"
-                        placeholder="Dr Ravi">
-                    </td>
-
-                    <td>
-                        <input type="number"
-                        name="hours2"
-                        placeholder="4">
-                    </td>
-                </tr>
-
-
-                <tr>
-                    <td>
-                        <input type="text"
-                        name="subject3"
-                        placeholder="Python Programming">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                        name="code3"
-                        placeholder="CS305">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                        name="faculty3"
-                        placeholder="Dr Meena">
-                    </td>
-
-                    <td>
-                        <input type="number"
-                        name="hours3"
-                        placeholder="4">
-                    </td>
-                </tr>
-
-
-                <tr>
-                    <td>
-                        <input type="text"
-                        name="subject4"
-                        placeholder="DBMS">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                        name="code4"
-                        placeholder="CS306">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                        name="faculty4"
-                        placeholder="Dr Arjun">
-                    </td>
-
-                    <td>
-                        <input type="number"
-                        name="hours4"
-                        placeholder="3">
-                    </td>
-                </tr>
-
-
-                <tr>
-                    <td>
-                        <input type="text"
-                        name="subject5"
-                        placeholder="Operating Systems">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                        name="code5"
-                        placeholder="CS307">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                        name="faculty5"
-                        placeholder="Dr Priya">
-                    </td>
-
-                    <td>
-                        <input type="number"
-                        name="hours5"
-                        placeholder="4">
-                    </td>
-                </tr>
-
-
-                <tr>
-                    <td>
-                        <input type="text"
-                        name="subject6"
-                        placeholder="Computer Networks">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                        name="code6"
-                        placeholder="CS308">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                        name="faculty6"
-                        placeholder="Dr Rahul">
-                    </td>
-
-                    <td>
-                        <input type="number"
-                        name="hours6"
-                        placeholder="4">
-                    </td>
-                </tr>
-
-
-                <tr>
-                    <td>
-                        <input type="text"
-                        name="subject7"
-                        placeholder="Cloud Computing">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                        name="code7"
-                        placeholder="CS401">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                        name="faculty7"
-                        placeholder="Dr Akash">
-                    </td>
-
-                    <td>
-                        <input type="number"
-                        name="hours7"
-                        placeholder="3">
-                    </td>
-                </tr>
-
-
-                <tr>
-                    <td>
-                        <input type="text"
-                        name="subject8"
-                        placeholder="Data Science">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                        name="code8"
-                        placeholder="AIML401">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                        name="faculty8"
-                        placeholder="Dr John">
-                    </td>
-
-                    <td>
-                        <input type="number"
-                        name="hours8"
-                        placeholder="4">
-                    </td>
-                </tr>
-
-            </table>
-
-            <div class="button-right">
+                </table>
 
                 <button type="button"
                 id="addSubjectBtn">
@@ -411,63 +156,30 @@
 
             </div>
 
-        </div>
 
+            <!-- LABS -->
 
+            <div class="card">
 
-        <!-- ========================= -->
-        <!-- LAB DETAILS -->
-        <!-- ========================= -->
+                <h2>Labs</h2>
 
-        <div class="card">
+                <table id="labTable">
 
-            <h2>
-                Lab Details
-            </h2>
+                    <tr>
+                        <th>Lab</th>
+                        <th>Faculty</th>
+                        <th>Duration</th>
+                        <th>Room</th>
+                    </tr>
 
-            <table class="input-table"
-            id="labTable">
+                    <tr>
+                        <td><input type="text" name="labsubject1"></td>
+                        <td><input type="text" name="labfaculty1"></td>
+                        <td><input type="text" name="labduration1"></td>
+                        <td><input type="text" name="labroom1"></td>
+                    </tr>
 
-                <tr>
-
-                    <th>Lab Subject</th>
-                    <th>Faculty</th>
-                    <th>Duration</th>
-                    <th>Lab Room</th>
-
-                </tr>
-
-                <tr>
-
-                    <td>
-                        <input type="text"
-                        name="labsubject1"
-                        placeholder="AI Lab">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                        name="labfaculty1"
-                        placeholder="Dr Kumar">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                        name="labduration1"
-                        placeholder="2 Hours">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                        name="labroom1"
-                        placeholder="LAB-5">
-                    </td>
-
-                </tr>
-
-            </table>
-
-            <div class="button-right">
+                </table>
 
                 <button type="button"
                 id="addLabBtn">
@@ -478,184 +190,95 @@
 
             </div>
 
-        </div>
 
+            <!-- SETTINGS -->
 
+            <div class="card">
 
-        <!-- ========================= -->
-        <!-- TIMETABLE SETTINGS -->
-        <!-- ========================= -->
+                <h2>Timetable Settings</h2>
 
-        <div class="card">
+                <input type="number"
+                name="workingdays"
+                placeholder="Working Days">
 
-            <h2>
-                Timetable Settings
-            </h2>
+                <input type="number"
+                name="periods"
+                placeholder="Periods Per Day">
 
-            <div class="form-grid">
-
-                <div>
-
-                    <label>
-                        Working Days
-                    </label>
-
-                    <input type="number"
-                    name="workingdays"
-                    placeholder="5">
-
-                </div>
-
-                <div>
-
-                    <label>
-                        Periods Per Day
-                    </label>
-
-                    <input type="number"
-                    name="periods"
-                    placeholder="7">
-
-                </div>
-
-                <div>
-
-                    <label>
-                        Start Time
-                    </label>
-
-                    <input type="time"
-                    name="starttime">
-
-                </div>
-
-                <div>
-
-                    <label>
-                        Lunch Break Timing
-                    </label>
-
-                    <input type="text"
-                    name="lunch"
-                    placeholder="1:00 PM - 2:00 PM">
-
-                </div>
-
-                <div>
-
-                    <label>
-                        Period Duration
-                    </label>
-
-                    <input type="text"
-                    name="duration"
-                    placeholder="1 Hour">
-
-                </div>
+                <input type="time"
+                name="starttime">
 
             </div>
 
-        </div>
-
-
-
-        <!-- ========================= -->
-        <!-- ACTION BUTTONS -->
-        <!-- ========================= -->
-
-        <div class="action-buttons">
 
             <button type="submit">
 
-                Generate Timetable
+                🚀 Generate Timetable
 
             </button>
 
-            <button type="button"
-            onclick="printTimetable()">
+        </form>
 
-                Print Timetable
+
+        <!-- TIMETABLE OUTPUT -->
+
+        {% if timetable %}
+
+        <div class="card">
+
+            <h2>Generated Timetable</h2>
+
+            <button onclick="printTimetable()">
+
+                🖨 Print Timetable
 
             </button>
 
-            <button type="button">
+            <table>
 
-                Download PDF
+                <tr>
 
-            </button>
+                    <th>Time</th>
+
+                    <th>Monday</th>
+
+                    <th>Tuesday</th>
+
+                    <th>Wednesday</th>
+
+                    <th>Thursday</th>
+
+                    <th>Friday</th>
+
+                </tr>
+
+                {% for row in timetable %}
+
+                <tr>
+
+                    <td>{{ row.time }}</td>
+
+                    <td>{{ row.Monday|safe }}</td>
+
+                    <td>{{ row.Tuesday|safe }}</td>
+
+                    <td>{{ row.Wednesday|safe }}</td>
+
+                    <td>{{ row.Thursday|safe }}</td>
+
+                    <td>{{ row.Friday|safe }}</td>
+
+                </tr>
+
+                {% endfor %}
+
+            </table>
 
         </div>
 
-    </form>
-
-
-
-    <!-- ========================= -->
-    <!-- TIMETABLE OUTPUT -->
-    <!-- ========================= -->
-
-    {% if timetable %}
-
-    <div class="card">
-
-        <h2>
-            Generated Weekly Timetable
-        </h2>
-
-        <table class="timetable-table">
-
-            <tr>
-
-                <th>Time</th>
-                <th>Monday</th>
-                <th>Tuesday</th>
-                <th>Wednesday</th>
-                <th>Thursday</th>
-                <th>Friday</th>
-
-            </tr>
-
-            {% for row in timetable %}
-
-            <tr>
-
-                <td>{{ row.time }}</td>
-
-                <td>{{ row.Monday | safe }}</td>
-                <td>{{ row.Tuesday | safe }}</td>
-                <td>{{ row.Wednesday | safe }}</td>
-                <td>{{ row.Thursday | safe }}</td>
-                <td>{{ row.Friday | safe }}</td>
-
-            </tr>
-
-            {% endfor %}
-
-        </table>
+        {% endif %}
 
     </div>
-
-    {% endif %}
-
-
-
-    <!-- ========================= -->
-    <!-- FOOTER -->
-    <!-- ========================= -->
-
-    <div class="footer">
-
-        <p>
-
-            Developed by Sanjeev | B.Tech AIML Mini Project
-
-        </p>
-
-    </div>
-
-</div>
-
-<script src="{{ url_for('static', filename='script.js') }}"></script>
 
 </body>
 
