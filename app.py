@@ -8,9 +8,27 @@ def home():
 
     timetable = []
 
+    department = ""
+    semester = ""
+
     if request.method == 'POST':
 
-        subjects = [s.strip() for s in request.form['subjects'].split(',')]
+        department = request.form['department']
+        semester = request.form['semester']
+
+        subjects = []
+        faculty = []
+
+        for i in range(1, 6):
+
+            sub = request.form.get(f'subject{i}')
+            fac = request.form.get(f'faculty{i}')
+
+            if sub and fac:
+                subjects.append(sub)
+                faculty.append(fac)
+
+        subject_faculty = list(zip(subjects, faculty))
 
         periods = [
             "9:00 - 10:00",
@@ -37,18 +55,28 @@ def home():
 
             else:
 
+                def random_subject():
+                    sub, fac = random.choice(subject_faculty)
+                    return f"{sub}<br><small>{fac}</small>"
+
                 row = {
                     "time": period,
-                    "Monday": random.choice(subjects),
-                    "Tuesday": random.choice(subjects),
-                    "Wednesday": random.choice(subjects),
-                    "Thursday": random.choice(subjects),
-                    "Friday": random.choice(subjects)
+                    "Monday": random_subject(),
+                    "Tuesday": random_subject(),
+                    "Wednesday": random_subject(),
+                    "Thursday": random_subject(),
+                    "Friday": random_subject()
                 }
 
             timetable.append(row)
 
-    return render_template('index.html', timetable=timetable)
+    return render_template(
+        'index.html',
+        timetable=timetable,
+        department=department,
+        semester=semester,
+        subject_faculty=subject_faculty if request.method == 'POST' else []
+    )
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5002)
+    app.run(debug=True, port=5001)

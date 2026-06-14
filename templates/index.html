@@ -1,165 +1,207 @@
-<!DOCTYPE html>
-<html>
-
+<!DOCTYPE html><html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Timetable Generator</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-    <title>Student Time Table Generator</title>
+</head><body><div class="container"><div class="hero">
 
-    <style>
+    <img src="{{ url_for('static', filename='logo.png') }}" class="logo">
 
-        body{
-            font-family: Arial, sans-serif;
-            background: #eef2f7;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
+    <h1>Student Timetable Generator</h1>
 
-        .container{
-            width: 90%;
-            margin: auto;
-            margin-top: 40px;
-        }
-
-        h1{
-            color: #0d47a1;
-            margin-bottom: 20px;
-        }
-
-        .card{
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0px 0px 15px rgba(0,0,0,0.15);
-        }
-
-        input{
-            width: 70%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid gray;
-            font-size: 16px;
-        }
-
-        button{
-            background: #1976d2;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        button:hover{
-            background: #0d47a1;
-        }
-
-        table{
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: white;
-        }
-
-        th{
-            background: #1565c0;
-            color: white;
-            padding: 12px;
-        }
-
-        td{
-            padding: 12px;
-            border: 1px solid #ccc;
-        }
-
-        tr:nth-child(even){
-            background: #f5f5f5;
-        }
-
-        .footer{
-            margin-top: 30px;
-            color: gray;
-        }
-
-    </style>
-
-</head>
-
-<body>
-
-<div class="container">
-
-    <div class="card">
-
-        <h1>🎓 Student Time Table Generator</h1>
-
-        <form method="POST">
-
-            <h3>Enter Subjects (comma separated)</h3>
-
-            <input
-                type="text"
-                name="subjects"
-                placeholder="AI, Maths, Physics, Chemistry, DBMS">
-
-            <br><br>
-
-            <button type="submit">
-                Generate Timetable
-            </button>
-
-        </form>
-
-    </div>
-
-    {% if timetable %}
-
-    <div class="card" style="margin-top:20px;">
-
-        <h2>Generated Weekly Time Table</h2>
-
-        <table>
-
-            <tr>
-                <th>Time</th>
-                <th>Monday</th>
-                <th>Tuesday</th>
-                <th>Wednesday</th>
-                <th>Thursday</th>
-                <th>Friday</th>
-            </tr>
-
-            {% for row in timetable %}
-
-            <tr>
-
-                <td><b>{{ row.time }}</b></td>
-
-                <td>{{ row.Monday }}</td>
-                <td>{{ row.Tuesday }}</td>
-                <td>{{ row.Wednesday }}</td>
-                <td>{{ row.Thursday }}</td>
-                <td>{{ row.Friday }}</td>
-
-            </tr>
-
-            {% endfor %}
-
-        </table>
-
-    </div>
-
-    {% endif %}
-
-    <div class="footer">
-
-        <p>Developed for College Project</p>
-
-    </div>
+    <p>Professional College Timetable Management System</p>
 
 </div>
 
-</body>
+<div class="card">
 
+    <h2>Academic Information</h2>
+
+    <form method="POST">
+
+        <div class="grid">
+
+            <select name="department">
+
+                <option>AIML</option>
+                <option>CSE</option>
+                <option>IT</option>
+                <option>ECE</option>
+                <option>EEE</option>
+                <option>MECH</option>
+
+            </select>
+
+            <select name="semester">
+
+                <option>Semester 1</option>
+                <option>Semester 2</option>
+                <option>Semester 3</option>
+                <option>Semester 4</option>
+                <option>Semester 5</option>
+                <option>Semester 6</option>
+                <option>Semester 7</option>
+                <option>Semester 8</option>
+
+            </select>
+
+            <input type="text" placeholder="College Name">
+
+            <input type="text" placeholder="Section">
+
+            <input type="text" placeholder="Academic Year">
+
+            <input type="text" placeholder="Classroom Number">
+
+        </div>
+
+        <br>
+
+        <h2>Subject Details</h2>
+
+        <div class="subject-row">
+
+            <input type="text" name="subject1" placeholder="Subject 1">
+            <input type="text" name="faculty1" placeholder="Professor 1">
+            <input type="text" placeholder="Subject Code">
+            <input type="number" placeholder="Hours/Week">
+
+        </div>
+
+        <div class="subject-row">
+
+            <input type="text" name="subject2" placeholder="Subject 2">
+            <input type="text" name="faculty2" placeholder="Professor 2">
+            <input type="text" placeholder="Subject Code">
+            <input type="number" placeholder="Hours/Week">
+
+        </div>
+
+        <div class="subject-row">
+
+            <input type="text" name="subject3" placeholder="Subject 3">
+            <input type="text" name="faculty3" placeholder="Professor 3">
+            <input type="text" placeholder="Subject Code">
+            <input type="number" placeholder="Hours/Week">
+
+        </div>
+
+        <div class="subject-row">
+
+            <input type="text" name="subject4" placeholder="Subject 4">
+            <input type="text" name="faculty4" placeholder="Professor 4">
+            <input type="text" placeholder="Subject Code">
+            <input type="number" placeholder="Hours/Week">
+
+        </div>
+
+        <div class="subject-row">
+
+            <input type="text" name="subject5" placeholder="Subject 5">
+            <input type="text" name="faculty5" placeholder="Professor 5">
+            <input type="text" placeholder="Subject Code">
+            <input type="number" placeholder="Hours/Week">
+
+        </div>
+
+        <div class="button-group">
+
+            <button type="submit" class="generate-btn">
+                Generate Timetable
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% if timetable %}
+
+<div class="card" id="timetable-section">
+
+    <div class="section-header">
+
+        <h2>{{ department }} - {{ semester }}</h2>
+
+        <div>
+
+            <button class="download-btn"
+                    onclick="downloadTimetable()"
+                    type="button">
+                Download
+            </button>
+
+            <button class="print-btn"
+                    onclick="printTimetable()"
+                    type="button">
+                Print
+            </button>
+
+        </div>
+
+    </div>
+
+    <table>
+
+        <tr>
+
+            <th>Time</th>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+
+        </tr>
+
+        {% for row in timetable %}
+
+        <tr>
+
+            <td>{{ row.time }}</td>
+
+            <td>{{ row.Monday | safe }}</td>
+            <td>{{ row.Tuesday | safe }}</td>
+            <td>{{ row.Wednesday | safe }}</td>
+            <td>{{ row.Thursday | safe }}</td>
+            <td>{{ row.Friday | safe }}</td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</div>
+<div class="card">
+
+    <h2>Faculty Information</h2>
+
+    <table>
+
+        <tr>
+            <th>Subject</th>
+            <th>Faculty</th>
+        </tr>
+
+        {% for subject, faculty in subject_faculty %}
+
+        <tr>
+
+            <td>{{ subject }}</td>
+
+            <td>{{ faculty }}</td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</div>
+{% endif %}
+
+</div><script src="{{ url_for('static', filename='script.js') }}"></script></body>
 </html>
