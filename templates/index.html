@@ -6,210 +6,485 @@
     <meta charset="UTF-8">
 
     <meta name="viewport"
-    content="width=device-width, initial-scale=1.0">
+          content="width=device-width, initial-scale=1.0">
 
-    <title>Student Timetable Generator</title>
+    <title>SAANJEEV Timetable Generator</title>
 
+    <!-- CSS -->
     <link rel="stylesheet"
-    href="{{ url_for('static', filename='style.css') }}">
+          href="{{ url_for('static', filename='style.css') }}">
 
+    <!-- JS -->
     <script defer
-    src="{{ url_for('static', filename='script.js') }}"></script>
+            src="{{ url_for('static', filename='script.js') }}"></script>
 
     <!-- PWA SUPPORT -->
-
     <link rel="manifest"
-    href="/static/manifest.json">
+          href="/static/manifest.json">
 
     <meta name="theme-color"
-    content="#1565c0">
+          content="#1565c0">
 
     <link rel="apple-touch-icon"
-    href="/static/icon.png">
+          href="/static/icon.png">
 
 </head>
 
 <body>
 
-    <div class="container">
+<div class="main-container">
 
-        <h1>
-            🎓 Student Timetable Generator
-        </h1>
+    <!-- NAVBAR -->
+
+    <div class="top-navbar">
+
+        <div>
+
+            <h1>🎓 Student Timetable Generator</h1>
+
+            <p>
+                Professional College Timetable Management System
+            </p>
+
+        </div>
 
         <button onclick="toggleDarkMode()">
-            🌙 Toggle Dark Mode
+            🌙 Dark Mode
         </button>
 
-        <form method="POST">
+    </div>
 
-            <!-- ACADEMIC DETAILS -->
 
-            <div class="card">
+    <!-- FORM -->
 
-                <h2>Academic Information</h2>
+    <form method="POST">
 
-                <input type="text"
-                name="college"
-                placeholder="College Name">
+        <!-- COLLEGE DETAILS -->
 
-                <input type="text"
-                name="department"
-                placeholder="Department / Branch">
+        <div class="card">
 
-                <input type="text"
-                name="semester"
-                placeholder="Semester">
+            <h2>🏫 Academic Information</h2>
 
-                <input type="text"
-                name="section"
-                placeholder="Section">
+            <div class="form-grid">
 
-                <input type="text"
-                name="classroom"
-                placeholder="Classroom Number">
+                <div>
+                    <label>College Name</label>
+
+                    <input type="text"
+                           name="college"
+                           placeholder="Enter College Name">
+                </div>
+
+                <div>
+                    <label>Department / Branch</label>
+
+                    <input type="text"
+                           name="department"
+                           placeholder="CSE / AIML / ECE">
+                </div>
+
+                <div>
+                    <label>Semester</label>
+
+                    <input type="text"
+                           name="semester"
+                           placeholder="Semester">
+                </div>
+
+                <div>
+                    <label>Section</label>
+
+                    <input type="text"
+                           name="section"
+                           placeholder="Section">
+                </div>
+
+                <div>
+                    <label>Academic Year</label>
+
+                    <input type="text"
+                           name="year"
+                           placeholder="2025-2026">
+                </div>
+
+                <div>
+                    <label>Classroom Number</label>
+
+                    <input type="text"
+                           name="classroom"
+                           placeholder="Room Number">
+                </div>
 
             </div>
 
+        </div>
 
-            <!-- SUBJECTS -->
 
-            <div class="card">
+        <!-- SUBJECT DETAILS -->
 
-                <h2>Subjects</h2>
+        <div class="card">
 
-                <table id="subjectTable">
+            <h2>📚 Subject Details</h2>
 
-                    <tr>
-                        <th>Subject</th>
-                        <th>Code</th>
-                        <th>Professor</th>
-                        <th>Hours</th>
-                    </tr>
+            <table class="input-table"
+                   id="subjectTable">
 
-                    <!-- 8 SUBJECTS -->
+                <tr>
 
-                    <tr>
-                        <td><input type="text" name="subject1"></td>
-                        <td><input type="text" name="code1"></td>
-                        <td><input type="text" name="faculty1"></td>
-                        <td><input type="number" name="hours1"></td>
-                    </tr>
+                    <th>Subject Name</th>
 
-                    <tr>
-                        <td><input type="text" name="subject2"></td>
-                        <td><input type="text" name="code2"></td>
-                        <td><input type="text" name="faculty2"></td>
-                        <td><input type="number" name="hours2"></td>
-                    </tr>
+                    <th>Subject Code</th>
 
-                    <tr>
-                        <td><input type="text" name="subject3"></td>
-                        <td><input type="text" name="code3"></td>
-                        <td><input type="text" name="faculty3"></td>
-                        <td><input type="number" name="hours3"></td>
-                    </tr>
+                    <th>Professor Name</th>
 
-                    <tr>
-                        <td><input type="text" name="subject4"></td>
-                        <td><input type="text" name="code4"></td>
-                        <td><input type="text" name="faculty4"></td>
-                        <td><input type="number" name="hours4"></td>
-                    </tr>
+                    <th>Weekly Hours</th>
 
-                    <tr>
-                        <td><input type="text" name="subject5"></td>
-                        <td><input type="text" name="code5"></td>
-                        <td><input type="text" name="faculty5"></td>
-                        <td><input type="number" name="hours5"></td>
-                    </tr>
+                </tr>
 
-                    <tr>
-                        <td><input type="text" name="subject6"></td>
-                        <td><input type="text" name="code6"></td>
-                        <td><input type="text" name="faculty6"></td>
-                        <td><input type="number" name="hours6"></td>
-                    </tr>
+                <!-- SUBJECT 1 -->
 
-                    <tr>
-                        <td><input type="text" name="subject7"></td>
-                        <td><input type="text" name="code7"></td>
-                        <td><input type="text" name="faculty7"></td>
-                        <td><input type="number" name="hours7"></td>
-                    </tr>
+                <tr>
 
-                    <tr>
-                        <td><input type="text" name="subject8"></td>
-                        <td><input type="text" name="code8"></td>
-                        <td><input type="text" name="faculty8"></td>
-                        <td><input type="number" name="hours8"></td>
-                    </tr>
+                    <td>
+                        <input type="text"
+                               name="subject1"
+                               placeholder="Subject">
+                    </td>
 
-                </table>
+                    <td>
+                        <input type="text"
+                               name="code1"
+                               placeholder="Code">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="faculty1"
+                               placeholder="Professor">
+                    </td>
+
+                    <td>
+                        <input type="number"
+                               name="hours1"
+                               placeholder="Hours">
+                    </td>
+
+                </tr>
+
+                <!-- SUBJECT 2 -->
+
+                <tr>
+
+                    <td>
+                        <input type="text"
+                               name="subject2">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="code2">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="faculty2">
+                    </td>
+
+                    <td>
+                        <input type="number"
+                               name="hours2">
+                    </td>
+
+                </tr>
+
+                <!-- SUBJECT 3 -->
+
+                <tr>
+
+                    <td>
+                        <input type="text"
+                               name="subject3">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="code3">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="faculty3">
+                    </td>
+
+                    <td>
+                        <input type="number"
+                               name="hours3">
+                    </td>
+
+                </tr>
+
+                <!-- SUBJECT 4 -->
+
+                <tr>
+
+                    <td>
+                        <input type="text"
+                               name="subject4">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="code4">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="faculty4">
+                    </td>
+
+                    <td>
+                        <input type="number"
+                               name="hours4">
+                    </td>
+
+                </tr>
+
+                <!-- SUBJECT 5 -->
+
+                <tr>
+
+                    <td>
+                        <input type="text"
+                               name="subject5">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="code5">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="faculty5">
+                    </td>
+
+                    <td>
+                        <input type="number"
+                               name="hours5">
+                    </td>
+
+                </tr>
+
+                <!-- SUBJECT 6 -->
+
+                <tr>
+
+                    <td>
+                        <input type="text"
+                               name="subject6">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="code6">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="faculty6">
+                    </td>
+
+                    <td>
+                        <input type="number"
+                               name="hours6">
+                    </td>
+
+                </tr>
+
+                <!-- SUBJECT 7 -->
+
+                <tr>
+
+                    <td>
+                        <input type="text"
+                               name="subject7">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="code7">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="faculty7">
+                    </td>
+
+                    <td>
+                        <input type="number"
+                               name="hours7">
+                    </td>
+
+                </tr>
+
+                <!-- SUBJECT 8 -->
+
+                <tr>
+
+                    <td>
+                        <input type="text"
+                               name="subject8">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="code8">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="faculty8">
+                    </td>
+
+                    <td>
+                        <input type="number"
+                               name="hours8">
+                    </td>
+
+                </tr>
+
+            </table>
+
+            <div class="button-right">
 
                 <button type="button"
-                id="addSubjectBtn">
+                        id="addSubjectBtn">
 
-                    + Add Subject
+                    ➕ Add Subject
 
                 </button>
 
             </div>
 
+        </div>
 
-            <!-- LABS -->
 
-            <div class="card">
+        <!-- LAB DETAILS -->
 
-                <h2>Labs</h2>
+        <div class="card">
 
-                <table id="labTable">
+            <h2>🧪 Lab Details</h2>
 
-                    <tr>
-                        <th>Lab</th>
-                        <th>Faculty</th>
-                        <th>Duration</th>
-                        <th>Room</th>
-                    </tr>
+            <table class="input-table"
+                   id="labTable">
 
-                    <tr>
-                        <td><input type="text" name="labsubject1"></td>
-                        <td><input type="text" name="labfaculty1"></td>
-                        <td><input type="text" name="labduration1"></td>
-                        <td><input type="text" name="labroom1"></td>
-                    </tr>
+                <tr>
 
-                </table>
+                    <th>Lab Subject</th>
+
+                    <th>Faculty Name</th>
+
+                    <th>Duration</th>
+
+                    <th>Lab Room</th>
+
+                </tr>
+
+                <tr>
+
+                    <td>
+                        <input type="text"
+                               name="labsubject1">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="labfaculty1">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="labduration1">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               name="labroom1">
+                    </td>
+
+                </tr>
+
+            </table>
+
+            <div class="button-right">
 
                 <button type="button"
-                id="addLabBtn">
+                        id="addLabBtn">
 
-                    + Add Lab
+                    ➕ Add Lab
 
                 </button>
 
             </div>
 
+        </div>
 
-            <!-- SETTINGS -->
 
-            <div class="card">
+        <!-- TIMETABLE SETTINGS -->
 
-                <h2>Timetable Settings</h2>
+        <div class="card">
 
-                <input type="number"
-                name="workingdays"
-                placeholder="Working Days">
+            <h2>⚙️ Timetable Settings</h2>
 
-                <input type="number"
-                name="periods"
-                placeholder="Periods Per Day">
+            <div class="form-grid">
 
-                <input type="time"
-                name="starttime">
+                <div>
+
+                    <label>Working Days</label>
+
+                    <input type="number"
+                           name="workingdays"
+                           placeholder="5">
+
+                </div>
+
+                <div>
+
+                    <label>Periods Per Day</label>
+
+                    <input type="number"
+                           name="periods"
+                           placeholder="7">
+
+                </div>
+
+                <div>
+
+                    <label>Start Time</label>
+
+                    <input type="time"
+                           name="starttime">
+
+                </div>
+
+                <div>
+
+                    <label>Lunch Break</label>
+
+                    <input type="text"
+                           name="lunch"
+                           placeholder="1:00 PM - 2:00 PM">
+
+                </div>
 
             </div>
 
+        </div>
+
+
+        <!-- ACTION BUTTONS -->
+
+        <div class="action-buttons">
 
             <button type="submit">
 
@@ -217,68 +492,131 @@
 
             </button>
 
-        </form>
-
-
-        <!-- TIMETABLE OUTPUT -->
-
-        {% if timetable %}
-
-        <div class="card">
-
-            <h2>Generated Timetable</h2>
-
-            <button onclick="printTimetable()">
+            <button type="button"
+                    onclick="printTimetable()">
 
                 🖨 Print Timetable
 
             </button>
 
-            <table>
-
-                <tr>
-
-                    <th>Time</th>
-
-                    <th>Monday</th>
-
-                    <th>Tuesday</th>
-
-                    <th>Wednesday</th>
-
-                    <th>Thursday</th>
-
-                    <th>Friday</th>
-
-                </tr>
-
-                {% for row in timetable %}
-
-                <tr>
-
-                    <td>{{ row.time }}</td>
-
-                    <td>{{ row.Monday|safe }}</td>
-
-                    <td>{{ row.Tuesday|safe }}</td>
-
-                    <td>{{ row.Wednesday|safe }}</td>
-
-                    <td>{{ row.Thursday|safe }}</td>
-
-                    <td>{{ row.Friday|safe }}</td>
-
-                </tr>
-
-                {% endfor %}
-
-            </table>
-
         </div>
+
+    </form>
+
+
+    {% if timetable %}
+
+<div class="card timetable-print-area">
+
+    <div style="text-align:center; margin-bottom:20px;">
+
+        <h1>{{ college }}</h1>
+
+        <h2>DEPARTMENT OF {{ department }}</h2>
+
+        <h3>CLASS TIME TABLE</h3>
+
+    </div>
+
+    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:20px;">
+
+        <p><b>Semester:</b> {{ semester }}</p>
+
+        <p><b>Section:</b> {{ section }}</p>
+
+        <p><b>Academic Year:</b> {{ year }}</p>
+
+        <p><b>Room No:</b> {{ classroom }}</p>
+
+    </div>
+
+    <table class="timetable-table">
+
+        <tr>
+
+            <th>Time</th>
+
+            <th>Monday</th>
+
+            <th>Tuesday</th>
+
+            <th>Wednesday</th>
+
+            <th>Thursday</th>
+
+            <th>Friday</th>
+
+        </tr>
+
+        {% for row in timetable %}
+
+        <tr>
+
+            <td><b>{{ row.time }}</b></td>
+
+            <td>{{ row.Monday|safe }}</td>
+
+            <td>{{ row.Tuesday|safe }}</td>
+
+            <td>{{ row.Wednesday|safe }}</td>
+
+            <td>{{ row.Thursday|safe }}</td>
+
+            <td>{{ row.Friday|safe }}</td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    <br>
+
+    <h3>📚 Subject - Faculty Details</h3>
+
+    <table class="timetable-table">
+
+        <tr>
+
+            <th>Subject</th>
+
+            <th>Faculty</th>
+
+        </tr>
+
+        {% for i in range(1,9) %}
+
+        {% if request.form.get('subject' ~ i) %}
+
+        <tr>
+
+            <td>{{ request.form.get('subject' ~ i) }}</td>
+
+            <td>{{ request.form.get('faculty' ~ i) }}</td>
+
+        </tr>
 
         {% endif %}
 
+        {% endfor %}
+
+    </table>
+
+</div>
+
+{% endif %}
+
+    <!-- FOOTER -->
+
+    <div class="footer">
+
+        <p>
+            Developed with ❤️ by Sanjeev
+        </p>
+
     </div>
+
+</div>
 
 </body>
 
