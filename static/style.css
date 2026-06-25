@@ -102,6 +102,22 @@ label{
     font-weight:bold;
 }
 
+.required-star{
+    color:#d00000;
+    font-weight:bold;
+}
+
+.required-note{
+    color:#555;
+    font-size:14px;
+    margin-top:-12px;
+    margin-bottom:18px;
+}
+
+.dark-mode .required-note{
+    color:#cfcfcf;
+}
+
 
 /* ========================= */
 /* INPUTS */

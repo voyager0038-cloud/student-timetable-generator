@@ -23,6 +23,8 @@ def home():
     period_headers = []
     first_break_index = None
     lunch_index = None
+    first_break = "10:50 AM - 11:00 AM"
+    lunch_break = "1:00 PM - 2:00 PM"
 
     if request.method == 'POST':
 
@@ -40,6 +42,28 @@ def home():
                 subject_code = request.form.get(f"code{number}")
                 faculty_name = request.form.get(f"faculty{number}")
                 hours = request.form.get(f"hours{number}")
+
+                if any([subject_name, subject_code, faculty_name, hours]) and not all([subject_name, subject_code, faculty_name, hours]):
+                    return render_template(
+                        'index.html',
+                        timetable=[],
+                        subjects=[],
+                        days=[],
+                        period_headers=[],
+                        first_break=first_break,
+                        lunch_break=lunch_break,
+                        error="Please complete subject name, code, professor, and weekly hours for every subject row you start filling.",
+                        college=request.form.get("college", ""),
+                        affiliation=request.form.get("affiliation", ""),
+                        department=request.form.get("department", ""),
+                        semester=request.form.get("semester", ""),
+                        section=request.form.get("section", ""),
+                        year=request.form.get("year", ""),
+                        classroom=request.form.get("classroom", ""),
+                        cycle=request.form.get("cycle", ""),
+                        class_teacher=request.form.get("classteacher", ""),
+                        effective_from=request.form.get("effectivefrom", "")
+                    )
 
                 if subject_name:
 
@@ -86,22 +110,22 @@ def home():
         # =========================
 
         working_days = int(
-            request.form.get("workingdays", 5)
+            request.form.get("workingdays", 5) or 5
         )
 
         periods_per_day = int(
-            request.form.get("periods", 7)
+            request.form.get("periods", 7) or 7
         )
 
         lunch_break = request.form.get(
             "lunch",
             "1:00 PM - 2:00 PM"
-        )
+        ) or "1:00 PM - 2:00 PM"
 
         start_time = request.form.get(
             "starttime",
             "09:00"
-        )
+        ) or "09:00"
 
         period_duration = 1
         first_break_after = int(request.form.get("firstbreakafter", 2) or 2)
@@ -128,7 +152,9 @@ def home():
                 classroom=request.form.get("classroom", ""),
                 cycle=request.form.get("cycle", ""),
                 class_teacher=request.form.get("classteacher", ""),
-                effective_from=request.form.get("effectivefrom", "")
+                effective_from=request.form.get("effectivefrom", ""),
+                first_break=first_break,
+                lunch_break=lunch_break
             )
 
         # =========================

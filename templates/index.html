@@ -68,12 +68,13 @@
             <div class="form-grid">
 
                 <div>
-                    <label>College Name</label>
+                    <label>College Name <span class="required-star">*</span></label>
 
                     <input type="text"
                            name="college"
                            placeholder="Enter College Name"
-                           value="{{ college }}">
+                           value="{{ college }}"
+                           required>
                 </div>
 
                 <div>
@@ -86,48 +87,53 @@
                 </div>
 
                 <div>
-                    <label>Department / Branch</label>
+                    <label>Department / Branch <span class="required-star">*</span></label>
 
                     <input type="text"
                            name="department"
                            placeholder="CSE / AIML / ECE"
-                           value="{{ department }}">
+                           value="{{ department }}"
+                           required>
                 </div>
 
                 <div>
-                    <label>Semester</label>
+                    <label>Semester <span class="required-star">*</span></label>
 
                     <input type="text"
                            name="semester"
                            placeholder="Semester"
-                           value="{{ semester }}">
+                           value="{{ semester }}"
+                           required>
                 </div>
 
                 <div>
-                    <label>Section</label>
+                    <label>Section <span class="required-star">*</span></label>
 
                     <input type="text"
                            name="section"
                            placeholder="Section"
-                           value="{{ section }}">
+                           value="{{ section }}"
+                           required>
                 </div>
 
                 <div>
-                    <label>Academic Year</label>
+                    <label>Academic Year <span class="required-star">*</span></label>
 
                     <input type="text"
                            name="year"
                            placeholder="2025-2026"
-                           value="{{ year }}">
+                           value="{{ year }}"
+                           required>
                 </div>
 
                 <div>
-                    <label>Classroom Number</label>
+                    <label>Classroom Number <span class="required-star">*</span></label>
 
                     <input type="text"
                            name="classroom"
                            placeholder="Room Number"
-                           value="{{ classroom }}">
+                           value="{{ classroom }}"
+                           required>
                 </div>
 
                 <div>
@@ -141,21 +147,23 @@
                 </div>
 
                 <div>
-                    <label>Class Teacher</label>
+                    <label>Class Teacher <span class="required-star">*</span></label>
 
                     <input type="text"
                            name="classteacher"
                            placeholder="Ms Akshitha K"
-                           value="{{ class_teacher }}">
+                           value="{{ class_teacher }}"
+                           required>
                 </div>
 
                 <div>
-                    <label>W.E.F.</label>
+                    <label>W.E.F. (With Effect From) <span class="required-star">*</span></label>
 
                     <input type="text"
                            name="effectivefrom"
                            placeholder="05.03.2026"
-                           value="{{ effective_from }}">
+                           value="{{ effective_from }}"
+                           required>
                 </div>
 
             </div>
@@ -168,261 +176,63 @@
         <div class="card">
 
             <h2>📚 Subject Details</h2>
+            <p class="required-note">Fields marked <span class="required-star">*</span> are required.</p>
 
             <table class="input-table"
                    id="subjectTable">
 
                 <tr>
 
-                    <th>Subject Name</th>
+                    <th>Subject Name <span class="required-star">*</span></th>
 
-                    <th>Subject Code</th>
+                    <th>Subject Code <span class="required-star">*</span></th>
 
-                    <th>Professor Name</th>
+                    <th>Professor Name <span class="required-star">*</span></th>
 
-                    <th>Weekly Hours</th>
+                    <th>Weekly Hours <span class="required-star">*</span></th>
 
                 </tr>
 
-                <!-- SUBJECT 1 -->
+                {% for i in range(1, 9) %}
 
                 <tr>
 
                     <td>
                         <input type="text"
-                               name="subject1"
-                               placeholder="Subject">
+                               name="subject{{ i }}"
+                               placeholder="Subject"
+                               value="{{ request.form.get('subject' ~ i, '') }}"
+                               {% if i == 1 %}required{% endif %}>
                     </td>
 
                     <td>
                         <input type="text"
-                               name="code1"
-                               placeholder="Code">
+                               name="code{{ i }}"
+                               placeholder="Code"
+                               value="{{ request.form.get('code' ~ i, '') }}"
+                               {% if i == 1 %}required{% endif %}>
                     </td>
 
                     <td>
                         <input type="text"
-                               name="faculty1"
-                               placeholder="Professor">
+                               name="faculty{{ i }}"
+                               placeholder="Professor"
+                               value="{{ request.form.get('faculty' ~ i, '') }}"
+                               {% if i == 1 %}required{% endif %}>
                     </td>
 
                     <td>
                         <input type="number"
-                               name="hours1"
-                               placeholder="Hours">
+                               name="hours{{ i }}"
+                               min="1"
+                               placeholder="Hours"
+                               value="{{ request.form.get('hours' ~ i, '') }}"
+                               {% if i == 1 %}required{% endif %}>
                     </td>
 
                 </tr>
 
-                <!-- SUBJECT 2 -->
-
-                <tr>
-
-                    <td>
-                        <input type="text"
-                               name="subject2"
-                               placeholder="Subject">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                               name="code2"
-                               placeholder="Code">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                               name="faculty2"
-                               placeholder="Professor">
-                    </td>
-
-                    <td>
-                        <input type="number"
-                               name="hours2"
-                               placeholder="Hours">
-                    </td>
-
-                </tr>
-
-                <!-- SUBJECT 3 -->
-
-                <tr>
-
-                    <td>
-                        <input type="text"
-                               name="subject3"
-                               placeholder="Subject">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                               name="code3"
-                               placeholder="Code">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                               name="faculty3"
-                               placeholder="Professor">
-                    </td>
-
-                    <td>
-                        <input type="number"
-                               name="hours3"
-                               placeholder="Hours">
-                    </td>
-
-                </tr>
-
-                <!-- SUBJECT 4 -->
-
-                <tr>
-
-                    <td>
-                        <input type="text"
-                               name="subject4"
-                               placeholder="Subject">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                               name="code4"
-                               placeholder="Code">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                               name="faculty4"
-                               placeholder="Professor">
-                    </td>
-
-                    <td>
-                        <input type="number"
-                               name="hours4"
-                               placeholder="Hours">
-                    </td>
-
-                </tr>
-
-                <!-- SUBJECT 5 -->
-
-                <tr>
-
-                    <td>
-                        <input type="text"
-                               name="subject5"
-                               placeholder="Subject">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                               name="code5"
-                               placeholder="Code">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                               name="faculty5"
-                               placeholder="Professor">
-                    </td>
-
-                    <td>
-                        <input type="number"
-                               name="hours5"
-                               placeholder="Hours">
-                    </td>
-
-                </tr>
-
-                <!-- SUBJECT 6 -->
-
-                <tr>
-
-                    <td>
-                        <input type="text"
-                               name="subject6"
-                               placeholder="Subject">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                               name="code6"
-                               placeholder="Code">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                               name="faculty6"
-                               placeholder="Professor">
-                    </td>
-
-                    <td>
-                        <input type="number"
-                               name="hours6"
-                               placeholder="Hours">
-                    </td>
-
-                </tr>
-
-                <!-- SUBJECT 7 -->
-
-                <tr>
-
-                    <td>
-                        <input type="text"
-                               name="subject7"
-                               placeholder="Subject">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                               name="code7"
-                               placeholder="Code">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                               name="faculty7"
-                               placeholder="Professor">
-                    </td>
-
-                    <td>
-                        <input type="number"
-                               name="hours7"
-                               placeholder="Hours">
-                    </td>
-
-                </tr>
-
-                <!-- SUBJECT 8 -->
-
-                <tr>
-
-                    <td>
-                        <input type="text"
-                               name="subject8"
-                               placeholder="Subject">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                               name="code8"
-                               placeholder="Code">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                               name="faculty8"
-                               placeholder="Professor">
-                    </td>
-
-                    <td>
-                        <input type="number"
-                               name="hours8"
-                               placeholder="Hours">
-                    </td>
-
-                </tr>
+                {% endfor %}
 
             </table>
 
@@ -466,25 +276,29 @@
                     <td>
                         <input type="text"
                                name="labsubject1"
-                               placeholder="Lab Subject">
+                               placeholder="Lab Subject"
+                               value="{{ request.form.get('labsubject1', '') }}">
                     </td>
 
                     <td>
                         <input type="text"
                                name="labfaculty1"
-                               placeholder="Faculty Name">
+                               placeholder="Faculty Name"
+                               value="{{ request.form.get('labfaculty1', '') }}">
                     </td>
 
                     <td>
                         <input type="text"
                                name="labduration1"
-                               placeholder="Duration">
+                               placeholder="Duration"
+                               value="{{ request.form.get('labduration1', '') }}">
                     </td>
 
                     <td>
                         <input type="text"
                                name="labroom1"
-                               placeholder="Lab Room">
+                               placeholder="Lab Room"
+                               value="{{ request.form.get('labroom1', '') }}">
                     </td>
 
                 </tr>
@@ -515,76 +329,90 @@
 
                 <div>
 
-                    <label>Working Days</label>
+                    <label>Working Days <span class="required-star">*</span></label>
 
                     <input type="number"
                            name="workingdays"
                            min="1"
                            max="6"
-                           placeholder="5">
+                           placeholder="5"
+                           value="{{ request.form.get('workingdays', '') }}"
+                           required>
 
                 </div>
 
                 <div>
 
-                    <label>Periods Per Day</label>
+                    <label>Periods Per Day <span class="required-star">*</span></label>
 
                     <input type="number"
                            name="periods"
                            min="1"
                            max="10"
-                           placeholder="7">
+                           placeholder="7"
+                           value="{{ request.form.get('periods', '') }}"
+                           required>
 
                 </div>
 
                 <div>
 
-                    <label>Start Time</label>
+                    <label>Start Time <span class="required-star">*</span></label>
 
                     <input type="time"
-                           name="starttime">
+                           name="starttime"
+                           value="{{ request.form.get('starttime', '') }}"
+                           required>
 
                 </div>
 
                 <div>
 
-                    <label>Lunch Break</label>
+                    <label>Lunch Break <span class="required-star">*</span></label>
 
                     <input type="text"
                            name="lunch"
-                           placeholder="1:00 PM - 2:00 PM">
+                           placeholder="1:00 PM - 2:00 PM"
+                           value="{{ request.form.get('lunch', '') }}"
+                           required>
 
                 </div>
 
                 <div>
 
-                    <label>Short Break</label>
+                    <label>Short Break <span class="required-star">*</span></label>
 
                     <input type="text"
                            name="firstbreak"
-                           placeholder="10:50 AM - 11:00 AM">
+                           placeholder="10:50 AM - 11:00 AM"
+                           value="{{ request.form.get('firstbreak', '') }}"
+                           required>
 
                 </div>
 
                 <div>
 
-                    <label>Short Break After Period</label>
+                    <label>Short Break After Period <span class="required-star">*</span></label>
 
                     <input type="number"
                            name="firstbreakafter"
                            min="0"
-                           placeholder="2">
+                           placeholder="2"
+                           value="{{ request.form.get('firstbreakafter', '') }}"
+                           required>
 
                 </div>
 
                 <div>
 
-                    <label>Lunch After Period</label>
+                    <label>Lunch After Period <span class="required-star">*</span></label>
 
                     <input type="number"
                            name="lunchafter"
                            min="0"
-                           placeholder="4">
+                           placeholder="4"
+                           value="{{ request.form.get('lunchafter', '') }}"
+                           required>
 
                 </div>
 
