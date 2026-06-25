@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title>Saved Timetables</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="main-container">
+
+    <div class="top-navbar">
+        <div>
+            <h1>Saved Timetables</h1>
+            <p>View, edit, or delete approved section timetables</p>
+        </div>
+
+        <a class="button-link"
+           href="{{ url_for('home') }}">
+            Generator
+        </a>
+    </div>
+
+    {% if message %}
+
+    <div class="notice success-message">
+        {{ message }}
+    </div>
+
+    {% endif %}
+
+    <div class="card">
+        <h2>Approved Sections</h2>
+
+        {% if saved_timetables %}
+
+        <table class="input-table">
+            <tr>
+                <th>Section</th>
+                <th>Department</th>
+                <th>Semester</th>
+                <th>Academic Year</th>
+                <th>Room</th>
+                <th>Saved Periods</th>
+                <th>Actions</th>
+            </tr>
+
+            {% for item in saved_timetables %}
+
+            <tr>
+                <td>{{ item.section }}</td>
+                <td>{{ item.department }}</td>
+                <td>{{ item.semester }}</td>
+                <td>{{ item.year }}</td>
+                <td>{{ item.classroom }}</td>
+                <td>{{ item.total_periods }}</td>
+                <td class="table-actions">
+                    <a class="small-link"
+                       href="{{ url_for('view_saved_timetable', section=item.section) }}">
+                        View
+                    </a>
+
+                    <a class="small-link"
+                       href="{{ url_for('edit_saved', section=item.section) }}">
+                        Edit
+                    </a>
+
+                    <form method="POST"
+                          action="{{ url_for('delete_saved', section=item.section) }}">
+                        <button type="submit"
+                                class="danger-button">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+        {% else %}
+
+        <p>No approved timetables saved yet.</p>
+
+        {% endif %}
+
+    </div>
+
+    {% if selected %}
+
+    <div class="card">
+        <h2>Section {{ selected.section }} Saved Entries</h2>
+
+        <table class="input-table">
+            <tr>
+                <th>Day</th>
+                <th>Time Slot</th>
+                <th>Subject / Lab</th>
+                <th>Faculty</th>
+                <th>Room</th>
+            </tr>
+
+            {% for entry in selected.entries %}
+
+            <tr>
+                <td>{{ entry.day }}</td>
+                <td>{{ entry.time_slot }}</td>
+                <td>{{ entry.subject }}</td>
+                <td>{{ entry.faculty }}</td>
+                <td>{{ entry.classroom }}</td>
+            </tr>
+
+            {% endfor %}
+
+        </table>
+    </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+
+</html>

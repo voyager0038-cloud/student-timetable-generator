@@ -1,4 +1,5 @@
 import sqlite3
+import json
 
 DATABASE = "timetable.db"
 
@@ -23,6 +24,18 @@ def create_database():
         time_slot TEXT,
         section TEXT,
         subject TEXT
+    )
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS timetable_meta (
+        section TEXT PRIMARY KEY,
+        college TEXT,
+        department TEXT,
+        semester TEXT,
+        year TEXT,
+        classroom TEXT,
+        payload TEXT
     )
     """)
 
@@ -113,7 +126,7 @@ def save_entry(faculty, day, time_slot, section, subject, classroom=""):
 
     return saved
 
-def save_entries(entries, section):
+def save_entries(entries, section, metadata=None):
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
@@ -121,6 +134,10 @@ def save_entries(entries, section):
         cursor.execute("BEGIN IMMEDIATE")
         cursor.execute(
             "DELETE FROM timetable WHERE section=?",
+            (section,)
+        )
+        cursor.execute(
+            "DELETE FROM timetable_meta WHERE section=?",
             (section,)
         )
 
@@ -145,6 +162,22 @@ def save_entries(entries, section):
                 entry.get("subject", "")
             ))
 
+        metadata = metadata or {}
+
+        cursor.execute("""
+        INSERT INTO timetable_meta
+        (section, college, department, semester, year, classroom, payload)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            section,
+            metadata.get("college", ""),
+            metadata.get("department", ""),
+            metadata.get("semester", ""),
+            metadata.get("year", ""),
+            metadata.get("classroom", ""),
+            json.dumps(metadata)
+        ))
+
         conn.commit()
         saved = True
 
@@ -156,6 +189,76 @@ def save_entries(entries, section):
         conn.close()
 
     return saved
+
+def list_saved_timetables():
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT
+        m.section,
+        m.college,
+        m.department,
+        m.semester,
+        m.year,
+        m.classroom,
+        COUNT(t.id) AS total_periods
+    FROM timetable_meta m
+    LEFT JOIN timetable t ON t.section = m.section
+    GROUP BY
+        m.section,
+        m.college,
+        m.department,
+        m.semester,
+        m.year,
+        m.classroom
+    ORDER BY m.department, m.section
+    """)
+
+    rows = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+
+    return rows
+
+def get_saved_timetable(section):
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT payload FROM timetable_meta WHERE section=?",
+        (section,)
+    )
+    meta_row = cursor.fetchone()
+
+    cursor.execute("""
+    SELECT faculty, classroom, day, time_slot, section, subject
+    FROM timetable
+    WHERE section=?
+    ORDER BY day, time_slot
+    """, (section,))
+    entries = [dict(row) for row in cursor.fetchall()]
+
+    conn.close()
+
+    if not meta_row:
+        return None
+
+    payload = json.loads(meta_row["payload"])
+    payload["entries"] = entries
+
+    return payload
+
+def delete_saved_timetable(section):
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM timetable WHERE section=?", (section,))
+    cursor.execute("DELETE FROM timetable_meta WHERE section=?", (section,))
+
+    conn.commit()
+    conn.close()
 
 def faculty_busy(faculty, day, time_slot, ignore_section=""):
     conn = sqlite3.connect(DATABASE)

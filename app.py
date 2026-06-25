@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import json
 import random
 from datetime import datetime, timedelta
@@ -8,11 +8,49 @@ from database import (
     save_entries,
     faculty_busy,
     classroom_busy,
+    list_saved_timetables,
+    get_saved_timetable,
+    delete_saved_timetable,
 )
 
 app = Flask(__name__)
 
 create_database()
+
+def draft_to_form_values(draft):
+    form_values = {
+        "college": draft.get("college", ""),
+        "affiliation": draft.get("affiliation", ""),
+        "department": draft.get("department", ""),
+        "semester": draft.get("semester", ""),
+        "section": draft.get("section", ""),
+        "year": draft.get("year", ""),
+        "classroom": draft.get("classroom", ""),
+        "cycle": draft.get("cycle", ""),
+        "classteacher": draft.get("class_teacher", ""),
+        "effectivefrom": draft.get("effective_from", ""),
+        "workingdays": str(len(draft.get("days", [])) or ""),
+        "periods": str(len(draft.get("period_headers", [])) or ""),
+        "starttime": draft.get("starttime", ""),
+        "lunch": draft.get("lunch_break", ""),
+        "firstbreak": draft.get("first_break", ""),
+        "firstbreakafter": str(draft.get("first_break_index", "")),
+        "lunchafter": str(draft.get("lunch_index", "")),
+    }
+
+    for index, subject in enumerate(draft.get("subjects", []), start=1):
+        form_values[f"subject{index}"] = subject.get("name", "")
+        form_values[f"code{index}"] = subject.get("code", "")
+        form_values[f"faculty{index}"] = subject.get("faculty", "")
+        form_values[f"hours{index}"] = str(subject.get("hours", ""))
+
+    for index, lab in enumerate(draft.get("labs", []), start=1):
+        form_values[f"labsubject{index}"] = lab.get("name", "")
+        form_values[f"labfaculty{index}"] = lab.get("faculty", "")
+        form_values[f"labduration{index}"] = str(lab.get("duration", ""))
+        form_values[f"labroom{index}"] = lab.get("room", "")
+
+    return form_values
 
 def parse_lab_duration(duration):
     digits = "".join(char for char in (duration or "") if char.isdigit())
@@ -51,15 +89,27 @@ def build_clash_free_schedule(subjects, labs, slots, section, classroom, periods
     local_faculty_slots = set()
     local_room_slots = set()
     requirements = [make_lab_item(lab) for lab in labs]
+    failure_reason = ""
 
     for subject in subjects:
         for _ in range(subject["hours"]):
             requirements.append(make_theory_item(subject))
 
+    for lab in labs:
+        if lab["duration"] > periods_per_day:
+            return None, (
+                f"{lab['name']} needs {lab['duration']} continuous periods, but the day has "
+                f"only {periods_per_day} periods."
+            )
+
     required_periods = sum(item["length"] for item in requirements)
 
     if required_periods > len(slots):
-        return None
+        return None, (
+            f"Required teaching periods are {required_periods}, but only "
+            f"{len(slots)} timetable slots are available. Reduce weekly hours/lab durations "
+            "or increase working days/periods."
+        )
 
     faculty_load = {}
 
@@ -151,11 +201,28 @@ def build_clash_free_schedule(subjects, labs, slots, section, classroom, periods
         return candidates
 
     def backtrack(index):
+        nonlocal failure_reason
+
         if index == len(requirements):
             return True
 
         item = requirements[index]
         candidates = available_blocks(item)
+
+        if not candidates and not failure_reason:
+            room = item["room"] or classroom or "the selected room"
+
+            if item["type"] == "lab":
+                failure_reason = (
+                    f"{item['name']} could not be placed as a {item['length']}-period continuous lab. "
+                    f"Check that {item['faculty']} and {room} are free for a continuous block, and "
+                    "that the block does not cross short break or lunch."
+                )
+            else:
+                failure_reason = (
+                    f"{item['name']} could not be placed because {item['faculty']} or {room} "
+                    "is already busy in all available slots."
+                )
 
         random.shuffle(candidates)
 
@@ -192,9 +259,12 @@ def build_clash_free_schedule(subjects, labs, slots, section, classroom, periods
         return False
 
     if backtrack(0):
-        return assignments
+        return assignments, ""
 
-    return None
+    return None, failure_reason or (
+        "The timetable could not be completed after checking all valid placements. "
+        "Try reducing hours, changing faculty, changing lab rooms, or increasing periods/days."
+    )
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -240,12 +310,14 @@ def home():
                     classroom=request.form.get("classroom", ""),
                     cycle=request.form.get("cycle", ""),
                     class_teacher=request.form.get("classteacher", ""),
-                    effective_from=request.form.get("effectivefrom", "")
+                    effective_from=request.form.get("effectivefrom", ""),
+                    form_values=request.form
                 )
 
             saved = save_entries(
                 draft.get("entries", []),
-                draft.get("section", "")
+                draft.get("section", ""),
+                draft
             )
 
             return render_template(
@@ -271,7 +343,8 @@ def home():
                 classroom=draft.get("classroom", ""),
                 cycle=draft.get("cycle", ""),
                 class_teacher=draft.get("class_teacher", ""),
-                effective_from=draft.get("effective_from", "")
+                effective_from=draft.get("effective_from", ""),
+                form_values=draft_to_form_values(draft)
             )
 
         # =========================
@@ -310,7 +383,8 @@ def home():
                         class_teacher=request.form.get("classteacher", ""),
                         effective_from=request.form.get("effectivefrom", ""),
                         draft_payload="",
-                        approved=False
+                        approved=False,
+                        form_values=request.form
                     )
 
                 if subject_name:
@@ -362,7 +436,8 @@ def home():
                         class_teacher=request.form.get("classteacher", ""),
                         effective_from=request.form.get("effectivefrom", ""),
                         draft_payload="",
-                        approved=False
+                        approved=False,
+                        form_values=request.form
                     )
 
                 if lab_name:
@@ -425,7 +500,8 @@ def home():
                 first_break=first_break,
                 lunch_break=lunch_break,
                 draft_payload="",
-                approved=False
+                approved=False,
+                form_values=request.form
             )
 
         # =========================
@@ -504,7 +580,7 @@ def home():
                     "time": time_slot
                 })
 
-        schedule = build_clash_free_schedule(
+        schedule, failure_reason = build_clash_free_schedule(
             subjects,
             labs,
             slots,
@@ -525,7 +601,7 @@ def home():
                 lunch_index=lunch_index,
                 first_break=first_break,
                 lunch_break=lunch_break,
-                error="A clash-free timetable could not be generated with these inputs. Reduce weekly hours, change faculty assignments, increase periods/days, or check existing section schedules.",
+                error=failure_reason,
                 college=request.form.get("college", ""),
                 affiliation=request.form.get("affiliation", ""),
                 department=request.form.get("department", ""),
@@ -537,7 +613,8 @@ def home():
                 class_teacher=request.form.get("classteacher", ""),
                 effective_from=request.form.get("effectivefrom", ""),
                 draft_payload="",
-                approved=False
+                approved=False,
+                form_values=request.form
             )
 
         for period in range(periods_per_day):
@@ -589,7 +666,8 @@ def home():
             "classroom": request.form.get("classroom", ""),
             "cycle": request.form.get("cycle", ""),
             "class_teacher": request.form.get("classteacher", ""),
-            "effective_from": request.form.get("effectivefrom", "")
+            "effective_from": request.form.get("effectivefrom", ""),
+            "starttime": start_time
         })
 
         # =========================
@@ -619,7 +697,80 @@ def home():
         class_teacher=request.form.get("classteacher", ""),
         effective_from=request.form.get("effectivefrom", ""),
         draft_payload=draft_payload,
-        approved=approved
+        approved=approved,
+        form_values=request.form
+    )
+
+@app.route('/saved')
+def saved_timetables():
+    return render_template(
+        'saved.html',
+        saved_timetables=list_saved_timetables(),
+        selected=None,
+        message=request.args.get("message", "")
+    )
+
+@app.route('/saved/<section>')
+def view_saved_timetable(section):
+    selected = get_saved_timetable(section)
+
+    return render_template(
+        'saved.html',
+        saved_timetables=list_saved_timetables(),
+        selected=selected,
+        message="" if selected else "Saved timetable not found."
+    )
+
+@app.route('/saved/<section>/delete', methods=['POST'])
+def delete_saved(section):
+    delete_saved_timetable(section)
+
+    return redirect(
+        url_for(
+            'saved_timetables',
+            message=f"Saved timetable for section {section} deleted."
+        )
+    )
+
+@app.route('/saved/<section>/edit')
+def edit_saved(section):
+    saved = get_saved_timetable(section)
+
+    if not saved:
+        return redirect(
+            url_for(
+                'saved_timetables',
+                message="Saved timetable not found."
+            )
+        )
+
+    form_values = draft_to_form_values(saved)
+
+    return render_template(
+        'index.html',
+        timetable=[],
+        subjects=saved.get("subjects", []),
+        labs=saved.get("labs", []),
+        days=[],
+        period_headers=[],
+        first_break_index=None,
+        lunch_index=None,
+        first_break=saved.get("first_break", "10:50 AM - 11:00 AM"),
+        lunch_break=saved.get("lunch_break", "1:00 PM - 2:00 PM"),
+        error=None,
+        college=saved.get("college", ""),
+        affiliation=saved.get("affiliation", ""),
+        department=saved.get("department", ""),
+        semester=saved.get("semester", ""),
+        section=saved.get("section", ""),
+        year=saved.get("year", ""),
+        classroom=saved.get("classroom", ""),
+        cycle=saved.get("cycle", ""),
+        class_teacher=saved.get("class_teacher", ""),
+        effective_from=saved.get("effective_from", ""),
+        draft_payload="",
+        approved=False,
+        form_values=form_values
     )
 
 

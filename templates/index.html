@@ -32,6 +32,8 @@
 
 <body>
 
+{% set form_values = form_values|default(request.form) %}
+
 <div class="main-container">
 
     <!-- NAVBAR -->
@@ -48,9 +50,16 @@
 
         </div>
 
-        <button onclick="toggleDarkMode()">
-            🌙 Dark Mode
-        </button>
+        <div class="nav-actions">
+            <a class="button-link"
+               href="{{ url_for('saved_timetables') }}">
+                Saved Timetables
+            </a>
+
+            <button onclick="toggleDarkMode()">
+                🌙 Dark Mode
+            </button>
+        </div>
 
     </div>
 
@@ -201,7 +210,7 @@
                         <input type="text"
                                name="subject{{ i }}"
                                placeholder="Subject"
-                               value="{{ request.form.get('subject' ~ i, '') }}"
+                               value="{{ form_values.get('subject' ~ i, '') }}"
                                {% if i == 1 %}required{% endif %}>
                     </td>
 
@@ -209,7 +218,7 @@
                         <input type="text"
                                name="code{{ i }}"
                                placeholder="Code"
-                               value="{{ request.form.get('code' ~ i, '') }}"
+                               value="{{ form_values.get('code' ~ i, '') }}"
                                {% if i == 1 %}required{% endif %}>
                     </td>
 
@@ -217,7 +226,7 @@
                         <input type="text"
                                name="faculty{{ i }}"
                                placeholder="Professor"
-                               value="{{ request.form.get('faculty' ~ i, '') }}"
+                               value="{{ form_values.get('faculty' ~ i, '') }}"
                                {% if i == 1 %}required{% endif %}>
                     </td>
 
@@ -226,7 +235,7 @@
                                name="hours{{ i }}"
                                min="1"
                                placeholder="Hours"
-                               value="{{ request.form.get('hours' ~ i, '') }}"
+                               value="{{ form_values.get('hours' ~ i, '') }}"
                                {% if i == 1 %}required{% endif %}>
                     </td>
 
@@ -277,28 +286,28 @@
                         <input type="text"
                                name="labsubject1"
                                placeholder="Lab Subject"
-                               value="{{ request.form.get('labsubject1', '') }}">
+                               value="{{ form_values.get('labsubject1', '') }}">
                     </td>
 
                     <td>
                         <input type="text"
                                name="labfaculty1"
                                placeholder="Faculty Name"
-                               value="{{ request.form.get('labfaculty1', '') }}">
+                               value="{{ form_values.get('labfaculty1', '') }}">
                     </td>
 
                     <td>
                         <input type="text"
                                name="labduration1"
                                placeholder="Duration"
-                               value="{{ request.form.get('labduration1', '') }}">
+                               value="{{ form_values.get('labduration1', '') }}">
                     </td>
 
                     <td>
                         <input type="text"
                                name="labroom1"
                                placeholder="Lab Room"
-                               value="{{ request.form.get('labroom1', '') }}">
+                               value="{{ form_values.get('labroom1', '') }}">
                     </td>
 
                 </tr>
@@ -336,7 +345,7 @@
                            min="1"
                            max="6"
                            placeholder="5"
-                           value="{{ request.form.get('workingdays', '') }}"
+                           value="{{ form_values.get('workingdays', '') }}"
                            required>
 
                 </div>
@@ -350,7 +359,7 @@
                            min="1"
                            max="10"
                            placeholder="7"
-                           value="{{ request.form.get('periods', '') }}"
+                           value="{{ form_values.get('periods', '') }}"
                            required>
 
                 </div>
@@ -361,7 +370,7 @@
 
                     <input type="time"
                            name="starttime"
-                           value="{{ request.form.get('starttime', '') }}"
+                           value="{{ form_values.get('starttime', '') }}"
                            required>
 
                 </div>
@@ -373,7 +382,7 @@
                     <input type="text"
                            name="lunch"
                            placeholder="1:00 PM - 2:00 PM"
-                           value="{{ request.form.get('lunch', '') }}"
+                           value="{{ form_values.get('lunch', '') }}"
                            required>
 
                 </div>
@@ -385,7 +394,7 @@
                     <input type="text"
                            name="firstbreak"
                            placeholder="10:50 AM - 11:00 AM"
-                           value="{{ request.form.get('firstbreak', '') }}"
+                           value="{{ form_values.get('firstbreak', '') }}"
                            required>
 
                 </div>
@@ -398,7 +407,7 @@
                            name="firstbreakafter"
                            min="0"
                            placeholder="2"
-                           value="{{ request.form.get('firstbreakafter', '') }}"
+                           value="{{ form_values.get('firstbreakafter', '') }}"
                            required>
 
                 </div>
@@ -411,7 +420,7 @@
                            name="lunchafter"
                            min="0"
                            placeholder="4"
-                           value="{{ request.form.get('lunchafter', '') }}"
+                           value="{{ form_values.get('lunchafter', '') }}"
                            required>
 
                 </div>

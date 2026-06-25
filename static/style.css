@@ -55,6 +55,12 @@ body{
     font-size:15px;
 }
 
+.nav-actions{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
 
 /* ========================= */
 /* CARDS */
@@ -202,6 +208,53 @@ button{
     font-size:15px;
     font-weight:bold;
     transition:0.3s;
+}
+
+.button-link,
+.small-link{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    background:linear-gradient(to right,#1565c0,#0d47a1);
+    color:white;
+    border:none;
+    padding:14px 24px;
+    border-radius:12px;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.small-link{
+    padding:10px 14px;
+    border-radius:8px;
+    font-size:13px;
+}
+
+.button-link:hover,
+.small-link:hover{
+    transform:translateY(-3px);
+    box-shadow:0 6px 18px rgba(0,0,0,0.2);
+}
+
+.table-actions{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+}
+
+.table-actions form{
+    margin:0;
+}
+
+.danger-button{
+    background:linear-gradient(to right,#b00020,#750015);
+    padding:10px 14px;
+    border-radius:8px;
+    font-size:13px;
 }
 
 button:hover{
