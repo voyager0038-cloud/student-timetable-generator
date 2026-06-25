@@ -113,6 +113,50 @@ def save_entry(faculty, day, time_slot, section, subject, classroom=""):
 
     return saved
 
+def save_entries(entries, section):
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("BEGIN IMMEDIATE")
+        cursor.execute(
+            "DELETE FROM timetable WHERE section=?",
+            (section,)
+        )
+
+        for entry in entries:
+            faculty = entry.get("faculty", "")
+            classroom = entry.get("classroom", "")
+            faculty_key = normalize_faculty(faculty)
+            classroom_key = normalize_text(classroom)
+
+            cursor.execute("""
+            INSERT INTO timetable
+            (faculty, faculty_key, classroom, classroom_key, day, time_slot, section, subject)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                faculty,
+                faculty_key,
+                classroom,
+                classroom_key,
+                entry.get("day", ""),
+                entry.get("time_slot", ""),
+                section,
+                entry.get("subject", "")
+            ))
+
+        conn.commit()
+        saved = True
+
+    except sqlite3.IntegrityError:
+        conn.rollback()
+        saved = False
+
+    finally:
+        conn.close()
+
+    return saved
+
 def faculty_busy(faculty, day, time_slot, ignore_section=""):
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()

@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request
+import json
 import random
 from datetime import datetime, timedelta
 
 from database import (
     create_database,
-    save_entry,
+    save_entries,
     faculty_busy,
     classroom_busy,
-    clear_section
 )
 
 app = Flask(__name__)
@@ -115,8 +115,70 @@ def home():
     lunch_index = None
     first_break = "10:50 AM - 11:00 AM"
     lunch_break = "1:00 PM - 2:00 PM"
+    draft_payload = ""
+    approved = False
 
     if request.method == 'POST':
+
+        if request.form.get("action") == "approve":
+            draft_payload = request.form.get("draft_payload", "")
+
+            try:
+                draft = json.loads(draft_payload)
+            except json.JSONDecodeError:
+                draft = None
+
+            if not draft:
+                return render_template(
+                    'index.html',
+                    timetable=[],
+                    subjects=[],
+                    days=[],
+                    period_headers=[],
+                    error="Draft timetable could not be approved. Please generate it again.",
+                    draft_payload="",
+                    approved=False,
+                    college=request.form.get("college", ""),
+                    affiliation=request.form.get("affiliation", ""),
+                    department=request.form.get("department", ""),
+                    semester=request.form.get("semester", ""),
+                    section=request.form.get("section", ""),
+                    year=request.form.get("year", ""),
+                    classroom=request.form.get("classroom", ""),
+                    cycle=request.form.get("cycle", ""),
+                    class_teacher=request.form.get("classteacher", ""),
+                    effective_from=request.form.get("effectivefrom", "")
+                )
+
+            saved = save_entries(
+                draft.get("entries", []),
+                draft.get("section", "")
+            )
+
+            return render_template(
+                'index.html',
+                timetable=draft.get("timetable", []),
+                subjects=draft.get("subjects", []),
+                days=draft.get("days", []),
+                period_headers=draft.get("period_headers", []),
+                first_break_index=draft.get("first_break_index"),
+                lunch_index=draft.get("lunch_index"),
+                first_break=draft.get("first_break", first_break),
+                lunch_break=draft.get("lunch_break", lunch_break),
+                error=None if saved else "This draft could not be saved because a faculty or classroom clash now exists. Please generate a fresh timetable.",
+                draft_payload="" if saved else draft_payload,
+                approved=saved,
+                college=draft.get("college", ""),
+                affiliation=draft.get("affiliation", ""),
+                department=draft.get("department", ""),
+                semester=draft.get("semester", ""),
+                section=draft.get("section", ""),
+                year=draft.get("year", ""),
+                classroom=draft.get("classroom", ""),
+                cycle=draft.get("cycle", ""),
+                class_teacher=draft.get("class_teacher", ""),
+                effective_from=draft.get("effective_from", "")
+            )
 
         # =========================
         # SUBJECT COLLECTION
@@ -152,7 +214,9 @@ def home():
                         classroom=request.form.get("classroom", ""),
                         cycle=request.form.get("cycle", ""),
                         class_teacher=request.form.get("classteacher", ""),
-                        effective_from=request.form.get("effectivefrom", "")
+                        effective_from=request.form.get("effectivefrom", ""),
+                        draft_payload="",
+                        approved=False
                     )
 
                 if subject_name:
@@ -241,7 +305,9 @@ def home():
                 class_teacher=request.form.get("classteacher", ""),
                 effective_from=request.form.get("effectivefrom", ""),
                 first_break=first_break,
-                lunch_break=lunch_break
+                lunch_break=lunch_break,
+                draft_payload="",
+                approved=False
             )
 
         # =========================
@@ -348,47 +414,10 @@ def home():
                 classroom=request.form.get("classroom", ""),
                 cycle=request.form.get("cycle", ""),
                 class_teacher=request.form.get("classteacher", ""),
-                effective_from=request.form.get("effectivefrom", "")
+                effective_from=request.form.get("effectivefrom", ""),
+                draft_payload="",
+                approved=False
             )
-
-        if section:
-            clear_section(section)
-
-        for slot_key, subject in schedule.items():
-            day, time_slot = slot_key
-
-            saved = save_entry(
-                subject["faculty"],
-                day,
-                time_slot,
-                section,
-                subject["name"],
-                request.form.get("classroom", "")
-            )
-
-            if not saved:
-                return render_template(
-                    'index.html',
-                    timetable=[],
-                    subjects=subjects,
-                    days=days,
-                    period_headers=period_headers,
-                    first_break_index=first_break_index,
-                    lunch_index=lunch_index,
-                    first_break=first_break,
-                    lunch_break=lunch_break,
-                    error="Another timetable used the same faculty or classroom while this timetable was being saved. Please generate again.",
-                    college=request.form.get("college", ""),
-                    affiliation=request.form.get("affiliation", ""),
-                    department=request.form.get("department", ""),
-                    semester=request.form.get("semester", ""),
-                    section=request.form.get("section", ""),
-                    year=request.form.get("year", ""),
-                    classroom=request.form.get("classroom", ""),
-                    cycle=request.form.get("cycle", ""),
-                    class_teacher=request.form.get("classteacher", ""),
-                    effective_from=request.form.get("effectivefrom", "")
-                )
 
         for period in range(periods_per_day):
 
@@ -403,6 +432,41 @@ def home():
                 row[day] = selected_subject["code"] if selected_subject else "Library"
 
             timetable.append(row)
+
+        entries = []
+
+        for slot_key, subject in schedule.items():
+            day, time_slot = slot_key
+            entries.append({
+                "faculty": subject["faculty"],
+                "day": day,
+                "time_slot": time_slot,
+                "section": section,
+                "subject": subject["name"],
+                "classroom": request.form.get("classroom", "")
+            })
+
+        draft_payload = json.dumps({
+            "entries": entries,
+            "timetable": timetable,
+            "subjects": subjects,
+            "days": days,
+            "period_headers": period_headers,
+            "first_break_index": first_break_index,
+            "lunch_index": lunch_index,
+            "first_break": first_break,
+            "lunch_break": lunch_break,
+            "college": request.form.get("college", ""),
+            "affiliation": request.form.get("affiliation", ""),
+            "department": request.form.get("department", ""),
+            "semester": request.form.get("semester", ""),
+            "section": section,
+            "year": request.form.get("year", ""),
+            "classroom": request.form.get("classroom", ""),
+            "cycle": request.form.get("cycle", ""),
+            "class_teacher": request.form.get("classteacher", ""),
+            "effective_from": request.form.get("effectivefrom", "")
+        })
 
         # =========================
         # LUNCH BREAK
@@ -428,7 +492,9 @@ def home():
         classroom=request.form.get("classroom", ""),
         cycle=request.form.get("cycle", ""),
         class_teacher=request.form.get("classteacher", ""),
-        effective_from=request.form.get("effectivefrom", "")
+        effective_from=request.form.get("effectivefrom", ""),
+        draft_payload=draft_payload,
+        approved=approved
     )
 
 

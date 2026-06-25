@@ -425,7 +425,9 @@
 
         <div class="action-buttons">
 
-            <button type="submit">
+            <button type="submit"
+                    name="action"
+                    value="generate">
 
                 🚀 Generate Timetable
 
@@ -446,6 +448,14 @@
 
     <div class="notice error-message">
         {{ error }}
+    </div>
+
+    {% endif %}
+
+    {% if approved %}
+
+    <div class="notice success-message">
+        Timetable approved and saved successfully.
     </div>
 
     {% endif %}
@@ -574,6 +584,24 @@
     </div>
 
 </div>
+
+{% if draft_payload and not approved %}
+
+<form method="POST" class="approval-form">
+    <input type="hidden"
+           name="action"
+           value="approve">
+
+    <input type="hidden"
+           name="draft_payload"
+           value="{{ draft_payload|e }}">
+
+    <button type="submit">
+        ✅ Approve & Save Timetable
+    </button>
+</form>
+
+{% endif %}
 
 {% endif %}
 

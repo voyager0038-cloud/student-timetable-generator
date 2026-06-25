@@ -235,6 +235,18 @@ button:hover{
     border:1px solid #ffc9c9;
 }
 
+.success-message{
+    background:#eefaf0;
+    color:#146c2e;
+    border:1px solid #bfe8c8;
+}
+
+.approval-form{
+    display:flex;
+    justify-content:center;
+    margin:0 0 30px;
+}
+
 
 /* ========================= */
 /* OFFICIAL PRINT OUTPUT */
@@ -470,6 +482,7 @@ button:hover{
 
     .top-navbar,
     form,
+    .approval-form,
     .footer,
     .notice{
         display:none;
