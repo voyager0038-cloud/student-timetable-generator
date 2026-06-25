@@ -6,12 +6,102 @@ from database import (
     create_database,
     save_entry,
     faculty_busy,
+    classroom_busy,
     clear_section
 )
 
 app = Flask(__name__)
 
 create_database()
+
+def build_clash_free_schedule(subjects, slots, section, classroom):
+    assignments = {}
+    local_faculty_slots = set()
+    local_room_slots = set()
+    requirements = []
+
+    for subject in subjects:
+        for _ in range(subject["hours"]):
+            requirements.append(subject)
+
+    if len(requirements) > len(slots):
+        return None
+
+    faculty_load = {}
+
+    for subject in requirements:
+        faculty_load[subject["faculty"]] = faculty_load.get(subject["faculty"], 0) + 1
+
+    requirements.sort(
+        key=lambda subject: (
+            -faculty_load.get(subject["faculty"], 0),
+            subject["faculty"].lower(),
+            subject["name"].lower()
+        )
+    )
+
+    def available_slots(subject):
+        candidates = []
+
+        for slot in slots:
+            slot_key = (slot["day"], slot["time"])
+            faculty_slot = (subject["faculty"].strip().lower(), slot["day"], slot["time"])
+            room_slot = (classroom.strip().lower(), slot["day"], slot["time"])
+
+            if slot_key in assignments:
+                continue
+
+            if faculty_slot in local_faculty_slots:
+                continue
+
+            if classroom and room_slot in local_room_slots:
+                continue
+
+            if faculty_busy(subject["faculty"], slot["day"], slot["time"], section):
+                continue
+
+            if classroom_busy(classroom, slot["day"], slot["time"], section):
+                continue
+
+            candidates.append(slot)
+
+        return candidates
+
+    def backtrack(index):
+        if index == len(requirements):
+            return True
+
+        subject = requirements[index]
+        candidates = available_slots(subject)
+
+        random.shuffle(candidates)
+
+        for slot in candidates:
+            slot_key = (slot["day"], slot["time"])
+            faculty_slot = (subject["faculty"].strip().lower(), slot["day"], slot["time"])
+            room_slot = (classroom.strip().lower(), slot["day"], slot["time"])
+
+            assignments[slot_key] = subject
+            local_faculty_slots.add(faculty_slot)
+
+            if classroom:
+                local_room_slots.add(room_slot)
+
+            if backtrack(index + 1):
+                return True
+
+            assignments.pop(slot_key)
+            local_faculty_slots.remove(faculty_slot)
+
+            if classroom:
+                local_room_slots.remove(room_slot)
+
+        return False
+
+    if backtrack(0):
+        return assignments
+
+    return None
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -75,9 +165,6 @@ def home():
                     })
 
         section = request.form.get("section", "")
-
-        if section:
-            clear_section(section)
 
         # =========================
         # LAB COLLECTION
@@ -194,14 +281,6 @@ def home():
             "X"
         ]
 
-        subject_pool = []
-
-        for subject in subjects:
-            subject_pool.extend([subject] * subject["hours"])
-
-        if not subject_pool:
-            subject_pool = subjects[:]
-
         first_break_index = max(
             0,
             min(first_break_after, periods_per_day)
@@ -211,6 +290,8 @@ def home():
             first_break_index,
             min(lunch_after, periods_per_day)
         )
+
+        slots = []
 
         for period in range(periods_per_day):
 
@@ -232,46 +313,94 @@ def home():
                 "time": time_slot
             })
 
+            for day in days:
+                slots.append({
+                    "day": day,
+                    "period": period,
+                    "time": time_slot
+                })
+
+        schedule = build_clash_free_schedule(
+            subjects,
+            slots,
+            section,
+            request.form.get("classroom", "")
+        )
+
+        if schedule is None:
+            return render_template(
+                'index.html',
+                timetable=[],
+                subjects=subjects,
+                days=days,
+                period_headers=period_headers,
+                first_break_index=first_break_index,
+                lunch_index=lunch_index,
+                first_break=first_break,
+                lunch_break=lunch_break,
+                error="A clash-free timetable could not be generated with these inputs. Reduce weekly hours, change faculty assignments, increase periods/days, or check existing section schedules.",
+                college=request.form.get("college", ""),
+                affiliation=request.form.get("affiliation", ""),
+                department=request.form.get("department", ""),
+                semester=request.form.get("semester", ""),
+                section=request.form.get("section", ""),
+                year=request.form.get("year", ""),
+                classroom=request.form.get("classroom", ""),
+                cycle=request.form.get("cycle", ""),
+                class_teacher=request.form.get("classteacher", ""),
+                effective_from=request.form.get("effectivefrom", "")
+            )
+
+        if section:
+            clear_section(section)
+
+        for slot_key, subject in schedule.items():
+            day, time_slot = slot_key
+
+            saved = save_entry(
+                subject["faculty"],
+                day,
+                time_slot,
+                section,
+                subject["name"],
+                request.form.get("classroom", "")
+            )
+
+            if not saved:
+                return render_template(
+                    'index.html',
+                    timetable=[],
+                    subjects=subjects,
+                    days=days,
+                    period_headers=period_headers,
+                    first_break_index=first_break_index,
+                    lunch_index=lunch_index,
+                    first_break=first_break,
+                    lunch_break=lunch_break,
+                    error="Another timetable used the same faculty or classroom while this timetable was being saved. Please generate again.",
+                    college=request.form.get("college", ""),
+                    affiliation=request.form.get("affiliation", ""),
+                    department=request.form.get("department", ""),
+                    semester=request.form.get("semester", ""),
+                    section=request.form.get("section", ""),
+                    year=request.form.get("year", ""),
+                    classroom=request.form.get("classroom", ""),
+                    cycle=request.form.get("cycle", ""),
+                    class_teacher=request.form.get("classteacher", ""),
+                    effective_from=request.form.get("effectivefrom", "")
+                )
+
+        for period in range(periods_per_day):
+
             row = {
-                "time": time_slot
+                "time": period_headers[period]["time"]
             }
 
             for day in days:
 
-                assigned = False
-                attempts = 0
-
-                while not assigned and attempts < 20:
-
-                    selected_subject = random.choice(subject_pool)
-
-                    faculty = selected_subject["faculty"]
-
-                    if not faculty_busy(
-                        faculty,
-                        day,
-                        time_slot
-                    ):
-
-                        save_entry(
-                            faculty,
-                            day,
-                            time_slot,
-                            section,
-                            selected_subject["name"]
-                        )
-
-                        content = selected_subject['code'] or selected_subject['name']
-
-                        row[day] = content
-
-                        assigned = True
-
-                    attempts += 1
-
-                if not assigned:
-
-                    row[day] = "NO FACULTY AVAILABLE"
+                slot_key = (day, period_headers[period]["time"])
+                selected_subject = schedule.get(slot_key)
+                row[day] = selected_subject["code"] if selected_subject else "Library"
 
             timetable.append(row)
 
