@@ -577,6 +577,34 @@
 
     </table>
 
+    {% if labs %}
+
+    <h3 class="subject-title">Lab details</h3>
+
+    <table class="official-table subject-details-table">
+
+        <tr>
+            <th>Lab Subject</th>
+            <th>Faculty</th>
+            <th>Duration</th>
+            <th>Lab Room</th>
+        </tr>
+
+        {% for lab in labs %}
+
+        <tr>
+            <td>{{ lab.name }}</td>
+            <td>{{ lab.faculty }}</td>
+            <td>{{ lab.duration }} periods</td>
+            <td>{{ lab.room }}</td>
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    {% endif %}
+
     <div class="signature-row">
         <p>HOD-{{ department or 'APPLIED SCIENCES' }}</p>
         <p>DEAN-ACADEMICS</p>

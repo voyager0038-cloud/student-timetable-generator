@@ -14,56 +14,139 @@ app = Flask(__name__)
 
 create_database()
 
-def build_clash_free_schedule(subjects, slots, section, classroom):
+def parse_lab_duration(duration):
+    digits = "".join(char for char in (duration or "") if char.isdigit())
+    return int(digits) if digits else 2
+
+def make_theory_item(subject):
+    return {
+        "type": "theory",
+        "name": subject["name"],
+        "code": subject["code"],
+        "faculty": subject["faculty"],
+        "length": 1,
+        "room": "",
+        "display": subject["code"] or subject["name"]
+    }
+
+def make_lab_item(lab):
+    room = lab.get("room", "")
+    display = lab["name"]
+
+    if room:
+        display = f"{display} ({room})"
+
+    return {
+        "type": "lab",
+        "name": lab["name"],
+        "code": lab["name"],
+        "faculty": lab["faculty"],
+        "length": lab["duration"],
+        "room": room,
+        "display": display
+    }
+
+def build_clash_free_schedule(subjects, labs, slots, section, classroom, periods_per_day, break_indexes):
     assignments = {}
     local_faculty_slots = set()
     local_room_slots = set()
-    requirements = []
+    requirements = [make_lab_item(lab) for lab in labs]
 
     for subject in subjects:
         for _ in range(subject["hours"]):
-            requirements.append(subject)
+            requirements.append(make_theory_item(subject))
 
-    if len(requirements) > len(slots):
+    required_periods = sum(item["length"] for item in requirements)
+
+    if required_periods > len(slots):
         return None
 
     faculty_load = {}
 
-    for subject in requirements:
-        faculty_load[subject["faculty"]] = faculty_load.get(subject["faculty"], 0) + 1
+    for item in requirements:
+        faculty_load[item["faculty"]] = faculty_load.get(item["faculty"], 0) + item["length"]
 
     requirements.sort(
-        key=lambda subject: (
-            -faculty_load.get(subject["faculty"], 0),
-            subject["faculty"].lower(),
-            subject["name"].lower()
+        key=lambda item: (
+            -item["length"],
+            -faculty_load.get(item["faculty"], 0),
+            item["faculty"].lower(),
+            item["name"].lower()
         )
     )
 
-    def available_slots(subject):
+    slots_by_day_period = {
+        (slot["day"], slot["period"]): slot
+        for slot in slots
+    }
+
+    def block_crosses_break(start_period, length):
+        for period in range(start_period + 1, start_period + length):
+            if period in break_indexes:
+                return True
+
+        return False
+
+    def block_slots(start_slot, length):
+        if start_slot["period"] + length > periods_per_day:
+            return None
+
+        if block_crosses_break(start_slot["period"], length):
+            return None
+
+        block = []
+
+        for period in range(start_slot["period"], start_slot["period"] + length):
+            slot = slots_by_day_period.get((start_slot["day"], period))
+
+            if not slot:
+                return None
+
+            block.append(slot)
+
+        return block
+
+    def available_blocks(item):
         candidates = []
 
         for slot in slots:
-            slot_key = (slot["day"], slot["time"])
-            faculty_slot = (subject["faculty"].strip().lower(), slot["day"], slot["time"])
-            room_slot = (classroom.strip().lower(), slot["day"], slot["time"])
+            block = block_slots(slot, item["length"])
 
-            if slot_key in assignments:
+            if not block:
                 continue
 
-            if faculty_slot in local_faculty_slots:
+            room = item["room"] or classroom
+            available = True
+
+            for block_slot in block:
+                slot_key = (block_slot["day"], block_slot["time"])
+                faculty_slot = (item["faculty"].strip().lower(), block_slot["day"], block_slot["time"])
+                room_slot = (room.strip().lower(), block_slot["day"], block_slot["time"])
+
+                if slot_key in assignments:
+                    available = False
+                    break
+
+                if faculty_slot in local_faculty_slots:
+                    available = False
+                    break
+
+                if room and room_slot in local_room_slots:
+                    available = False
+                    break
+
+                if faculty_busy(item["faculty"], block_slot["day"], block_slot["time"], section):
+                    available = False
+                    break
+
+                if classroom_busy(room, block_slot["day"], block_slot["time"], section):
+                    available = False
+                    break
+
+            if not available:
                 continue
 
-            if classroom and room_slot in local_room_slots:
-                continue
-
-            if faculty_busy(subject["faculty"], slot["day"], slot["time"], section):
-                continue
-
-            if classroom_busy(classroom, slot["day"], slot["time"], section):
-                continue
-
-            candidates.append(slot)
+            candidates.append(block)
 
         return candidates
 
@@ -71,29 +154,39 @@ def build_clash_free_schedule(subjects, slots, section, classroom):
         if index == len(requirements):
             return True
 
-        subject = requirements[index]
-        candidates = available_slots(subject)
+        item = requirements[index]
+        candidates = available_blocks(item)
 
         random.shuffle(candidates)
 
-        for slot in candidates:
-            slot_key = (slot["day"], slot["time"])
-            faculty_slot = (subject["faculty"].strip().lower(), slot["day"], slot["time"])
-            room_slot = (classroom.strip().lower(), slot["day"], slot["time"])
+        for block in candidates:
+            room = item["room"] or classroom
+            applied_faculty_slots = []
+            applied_room_slots = []
 
-            assignments[slot_key] = subject
-            local_faculty_slots.add(faculty_slot)
+            for slot in block:
+                slot_key = (slot["day"], slot["time"])
+                faculty_slot = (item["faculty"].strip().lower(), slot["day"], slot["time"])
+                room_slot = (room.strip().lower(), slot["day"], slot["time"])
 
-            if classroom:
-                local_room_slots.add(room_slot)
+                assignments[slot_key] = item
+                local_faculty_slots.add(faculty_slot)
+                applied_faculty_slots.append(faculty_slot)
+
+                if room:
+                    local_room_slots.add(room_slot)
+                    applied_room_slots.append(room_slot)
 
             if backtrack(index + 1):
                 return True
 
-            assignments.pop(slot_key)
-            local_faculty_slots.remove(faculty_slot)
+            for slot in block:
+                assignments.pop((slot["day"], slot["time"]))
 
-            if classroom:
+            for faculty_slot in applied_faculty_slots:
+                local_faculty_slots.remove(faculty_slot)
+
+            for room_slot in applied_room_slots:
                 local_room_slots.remove(room_slot)
 
         return False
@@ -159,6 +252,7 @@ def home():
                 'index.html',
                 timetable=draft.get("timetable", []),
                 subjects=draft.get("subjects", []),
+                labs=draft.get("labs", []),
                 days=draft.get("days", []),
                 period_headers=draft.get("period_headers", []),
                 first_break_index=draft.get("first_break_index"),
@@ -247,12 +341,36 @@ def home():
                 lab_duration = request.form.get(f"labduration{number}")
                 lab_room = request.form.get(f"labroom{number}")
 
+                if any([lab_name, lab_faculty, lab_duration, lab_room]) and not all([lab_name, lab_faculty, lab_duration, lab_room]):
+                    return render_template(
+                        'index.html',
+                        timetable=[],
+                        subjects=[],
+                        days=[],
+                        period_headers=[],
+                        first_break=first_break,
+                        lunch_break=lunch_break,
+                        error="Please complete lab subject, faculty, duration, and lab room for every lab row you start filling.",
+                        college=request.form.get("college", ""),
+                        affiliation=request.form.get("affiliation", ""),
+                        department=request.form.get("department", ""),
+                        semester=request.form.get("semester", ""),
+                        section=request.form.get("section", ""),
+                        year=request.form.get("year", ""),
+                        classroom=request.form.get("classroom", ""),
+                        cycle=request.form.get("cycle", ""),
+                        class_teacher=request.form.get("classteacher", ""),
+                        effective_from=request.form.get("effectivefrom", ""),
+                        draft_payload="",
+                        approved=False
+                    )
+
                 if lab_name:
 
                     labs.append({
                         "name": lab_name,
                         "faculty": lab_faculty,
-                        "duration": lab_duration,
+                        "duration": parse_lab_duration(lab_duration),
                         "room": lab_room
                     })
 
@@ -388,9 +506,12 @@ def home():
 
         schedule = build_clash_free_schedule(
             subjects,
+            labs,
             slots,
             section,
-            request.form.get("classroom", "")
+            request.form.get("classroom", ""),
+            periods_per_day,
+            {first_break_index, lunch_index}
         )
 
         if schedule is None:
@@ -429,7 +550,7 @@ def home():
 
                 slot_key = (day, period_headers[period]["time"])
                 selected_subject = schedule.get(slot_key)
-                row[day] = selected_subject["code"] if selected_subject else "Library"
+                row[day] = selected_subject["display"] if selected_subject else "Library"
 
             timetable.append(row)
 
@@ -437,19 +558,22 @@ def home():
 
         for slot_key, subject in schedule.items():
             day, time_slot = slot_key
+            room = subject["room"] or request.form.get("classroom", "")
+
             entries.append({
                 "faculty": subject["faculty"],
                 "day": day,
                 "time_slot": time_slot,
                 "section": section,
                 "subject": subject["name"],
-                "classroom": request.form.get("classroom", "")
+                "classroom": room
             })
 
         draft_payload = json.dumps({
             "entries": entries,
             "timetable": timetable,
             "subjects": subjects,
+            "labs": labs,
             "days": days,
             "period_headers": period_headers,
             "first_break_index": first_break_index,
@@ -476,6 +600,7 @@ def home():
         'index.html',
         timetable=timetable,
         subjects=subjects,
+        labs=labs if request.method == 'POST' else [],
         days=days,
         period_headers=period_headers,
         first_break_index=first_break_index,
