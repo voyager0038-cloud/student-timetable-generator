@@ -18,14 +18,17 @@ create_database()
 def home():
 
     timetable = []
+    subjects = []
+    days = []
+    period_headers = []
+    first_break_index = None
+    lunch_index = None
 
     if request.method == 'POST':
 
         # =========================
         # SUBJECT COLLECTION
         # =========================
-
-        subjects = []
 
         for key in request.form:
 
@@ -101,6 +104,32 @@ def home():
         )
 
         period_duration = 1
+        first_break_after = int(request.form.get("firstbreakafter", 2) or 2)
+        lunch_after = int(request.form.get("lunchafter", 4) or 4)
+        first_break = request.form.get(
+            "firstbreak",
+            "10:50 AM - 11:00 AM"
+        )
+
+        if not subjects:
+            return render_template(
+                'index.html',
+                timetable=[],
+                subjects=[],
+                days=[],
+                period_headers=[],
+                error="Please enter at least one subject before generating the timetable.",
+                college=request.form.get("college", ""),
+                affiliation=request.form.get("affiliation", ""),
+                department=request.form.get("department", ""),
+                semester=request.form.get("semester", ""),
+                section=request.form.get("section", ""),
+                year=request.form.get("year", ""),
+                classroom=request.form.get("classroom", ""),
+                cycle=request.form.get("cycle", ""),
+                class_teacher=request.form.get("classteacher", ""),
+                effective_from=request.form.get("effectivefrom", "")
+            )
 
         # =========================
         # DAYS
@@ -126,6 +155,37 @@ def home():
             "%H:%M"
         )
 
+        roman_periods = [
+            "I",
+            "II",
+            "III",
+            "IV",
+            "V",
+            "VI",
+            "VII",
+            "VIII",
+            "IX",
+            "X"
+        ]
+
+        subject_pool = []
+
+        for subject in subjects:
+            subject_pool.extend([subject] * subject["hours"])
+
+        if not subject_pool:
+            subject_pool = subjects[:]
+
+        first_break_index = max(
+            0,
+            min(first_break_after, periods_per_day)
+        )
+
+        lunch_index = max(
+            first_break_index,
+            min(lunch_after, periods_per_day)
+        )
+
         for period in range(periods_per_day):
 
             current = start + timedelta(
@@ -141,6 +201,11 @@ def home():
                 f"{next_time.strftime('%I:%M %p')}"
             )
 
+            period_headers.append({
+                "number": roman_periods[period] if period < len(roman_periods) else str(period + 1),
+                "time": time_slot
+            })
+
             row = {
                 "time": time_slot
             }
@@ -152,7 +217,7 @@ def home():
 
                 while not assigned and attempts < 20:
 
-                    selected_subject = random.choice(subjects)
+                    selected_subject = random.choice(subject_pool)
 
                     faculty = selected_subject["faculty"]
 
@@ -170,11 +235,7 @@ def home():
                             selected_subject["name"]
                         )
 
-                        content = f"""
-                        <b>{selected_subject['name']}</b><br>
-                        {selected_subject['code']}<br>
-                        {faculty}
-                        """
+                        content = selected_subject['code'] or selected_subject['name']
 
                         row[day] = content
 
@@ -192,29 +253,27 @@ def home():
         # LUNCH BREAK
         # =========================
 
-        lunch_row = {
-            "time": lunch_break
-        }
-
-        for day in days:
-            lunch_row[day] = "🍴 Lunch Break"
-
-        insert_position = len(timetable) // 2
-
-        timetable.insert(
-            insert_position,
-            lunch_row
-        )
-
     return render_template(
         'index.html',
         timetable=timetable,
+        subjects=subjects,
+        days=days,
+        period_headers=period_headers,
+        first_break_index=first_break_index,
+        lunch_index=lunch_index,
+        first_break=first_break if request.method == 'POST' else "10:50 AM - 11:00 AM",
+        lunch_break=lunch_break if request.method == 'POST' else "1:00 PM - 2:00 PM",
+        error=None,
         college=request.form.get("college", ""),
+        affiliation=request.form.get("affiliation", ""),
         department=request.form.get("department", ""),
         semester=request.form.get("semester", ""),
         section=request.form.get("section", ""),
         year=request.form.get("year", ""),
-        classroom=request.form.get("classroom", "")
+        classroom=request.form.get("classroom", ""),
+        cycle=request.form.get("cycle", ""),
+        class_teacher=request.form.get("classteacher", ""),
+        effective_from=request.form.get("effectivefrom", "")
     )
 
 

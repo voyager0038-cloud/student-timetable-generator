@@ -72,7 +72,17 @@
 
                     <input type="text"
                            name="college"
-                           placeholder="Enter College Name">
+                           placeholder="Enter College Name"
+                           value="{{ college }}">
+                </div>
+
+                <div>
+                    <label>Affiliation / Accreditation Line</label>
+
+                    <input type="text"
+                           name="affiliation"
+                           placeholder="Autonomous college affiliated to VTU, Accredited by NBA & NAAC with 'A' grade"
+                           value="{{ affiliation }}">
                 </div>
 
                 <div>
@@ -80,7 +90,8 @@
 
                     <input type="text"
                            name="department"
-                           placeholder="CSE / AIML / ECE">
+                           placeholder="CSE / AIML / ECE"
+                           value="{{ department }}">
                 </div>
 
                 <div>
@@ -88,7 +99,8 @@
 
                     <input type="text"
                            name="semester"
-                           placeholder="Semester">
+                           placeholder="Semester"
+                           value="{{ semester }}">
                 </div>
 
                 <div>
@@ -96,7 +108,8 @@
 
                     <input type="text"
                            name="section"
-                           placeholder="Section">
+                           placeholder="Section"
+                           value="{{ section }}">
                 </div>
 
                 <div>
@@ -104,7 +117,8 @@
 
                     <input type="text"
                            name="year"
-                           placeholder="2025-2026">
+                           placeholder="2025-2026"
+                           value="{{ year }}">
                 </div>
 
                 <div>
@@ -112,7 +126,36 @@
 
                     <input type="text"
                            name="classroom"
-                           placeholder="Room Number">
+                           placeholder="Room Number"
+                           value="{{ classroom }}">
+                </div>
+
+                <div>
+                    <label>Cycle Optional</label>
+
+                    <select name="cycle">
+                        <option value="">No Cycle</option>
+                        <option value="Physics Cycle" {% if cycle == 'Physics Cycle' %}selected{% endif %}>Physics Cycle</option>
+                        <option value="Chemistry Cycle" {% if cycle == 'Chemistry Cycle' %}selected{% endif %}>Chemistry Cycle</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Class Teacher</label>
+
+                    <input type="text"
+                           name="classteacher"
+                           placeholder="Ms Akshitha K"
+                           value="{{ class_teacher }}">
+                </div>
+
+                <div>
+                    <label>W.E.F.</label>
+
+                    <input type="text"
+                           name="effectivefrom"
+                           placeholder="05.03.2026"
+                           value="{{ effective_from }}">
                 </div>
 
             </div>
@@ -177,22 +220,26 @@
 
                     <td>
                         <input type="text"
-                               name="subject2">
+                               name="subject2"
+                               placeholder="Subject">
                     </td>
 
                     <td>
                         <input type="text"
-                               name="code2">
+                               name="code2"
+                               placeholder="Code">
                     </td>
 
                     <td>
                         <input type="text"
-                               name="faculty2">
+                               name="faculty2"
+                               placeholder="Professor">
                     </td>
 
                     <td>
                         <input type="number"
-                               name="hours2">
+                               name="hours2"
+                               placeholder="Hours">
                     </td>
 
                 </tr>
@@ -203,22 +250,26 @@
 
                     <td>
                         <input type="text"
-                               name="subject3">
+                               name="subject3"
+                               placeholder="Subject">
                     </td>
 
                     <td>
                         <input type="text"
-                               name="code3">
+                               name="code3"
+                               placeholder="Code">
                     </td>
 
                     <td>
                         <input type="text"
-                               name="faculty3">
+                               name="faculty3"
+                               placeholder="Professor">
                     </td>
 
                     <td>
                         <input type="number"
-                               name="hours3">
+                               name="hours3"
+                               placeholder="Hours">
                     </td>
 
                 </tr>
@@ -229,22 +280,26 @@
 
                     <td>
                         <input type="text"
-                               name="subject4">
+                               name="subject4"
+                               placeholder="Subject">
                     </td>
 
                     <td>
                         <input type="text"
-                               name="code4">
+                               name="code4"
+                               placeholder="Code">
                     </td>
 
                     <td>
                         <input type="text"
-                               name="faculty4">
+                               name="faculty4"
+                               placeholder="Professor">
                     </td>
 
                     <td>
                         <input type="number"
-                               name="hours4">
+                               name="hours4"
+                               placeholder="Hours">
                     </td>
 
                 </tr>
@@ -255,22 +310,26 @@
 
                     <td>
                         <input type="text"
-                               name="subject5">
+                               name="subject5"
+                               placeholder="Subject">
                     </td>
 
                     <td>
                         <input type="text"
-                               name="code5">
+                               name="code5"
+                               placeholder="Code">
                     </td>
 
                     <td>
                         <input type="text"
-                               name="faculty5">
+                               name="faculty5"
+                               placeholder="Professor">
                     </td>
 
                     <td>
                         <input type="number"
-                               name="hours5">
+                               name="hours5"
+                               placeholder="Hours">
                     </td>
 
                 </tr>
@@ -281,22 +340,26 @@
 
                     <td>
                         <input type="text"
-                               name="subject6">
+                               name="subject6"
+                               placeholder="Subject">
                     </td>
 
                     <td>
                         <input type="text"
-                               name="code6">
+                               name="code6"
+                               placeholder="Code">
                     </td>
 
                     <td>
                         <input type="text"
-                               name="faculty6">
+                               name="faculty6"
+                               placeholder="Professor">
                     </td>
 
                     <td>
                         <input type="number"
-                               name="hours6">
+                               name="hours6"
+                               placeholder="Hours">
                     </td>
 
                 </tr>
@@ -307,22 +370,26 @@
 
                     <td>
                         <input type="text"
-                               name="subject7">
+                               name="subject7"
+                               placeholder="Subject">
                     </td>
 
                     <td>
                         <input type="text"
-                               name="code7">
+                               name="code7"
+                               placeholder="Code">
                     </td>
 
                     <td>
                         <input type="text"
-                               name="faculty7">
+                               name="faculty7"
+                               placeholder="Professor">
                     </td>
 
                     <td>
                         <input type="number"
-                               name="hours7">
+                               name="hours7"
+                               placeholder="Hours">
                     </td>
 
                 </tr>
@@ -333,22 +400,26 @@
 
                     <td>
                         <input type="text"
-                               name="subject8">
+                               name="subject8"
+                               placeholder="Subject">
                     </td>
 
                     <td>
                         <input type="text"
-                               name="code8">
+                               name="code8"
+                               placeholder="Code">
                     </td>
 
                     <td>
                         <input type="text"
-                               name="faculty8">
+                               name="faculty8"
+                               placeholder="Professor">
                     </td>
 
                     <td>
                         <input type="number"
-                               name="hours8">
+                               name="hours8"
+                               placeholder="Hours">
                     </td>
 
                 </tr>
@@ -394,22 +465,26 @@
 
                     <td>
                         <input type="text"
-                               name="labsubject1">
+                               name="labsubject1"
+                               placeholder="Lab Subject">
                     </td>
 
                     <td>
                         <input type="text"
-                               name="labfaculty1">
+                               name="labfaculty1"
+                               placeholder="Faculty Name">
                     </td>
 
                     <td>
                         <input type="text"
-                               name="labduration1">
+                               name="labduration1"
+                               placeholder="Duration">
                     </td>
 
                     <td>
                         <input type="text"
-                               name="labroom1">
+                               name="labroom1"
+                               placeholder="Lab Room">
                     </td>
 
                 </tr>
@@ -444,6 +519,8 @@
 
                     <input type="number"
                            name="workingdays"
+                           min="1"
+                           max="6"
                            placeholder="5">
 
                 </div>
@@ -454,6 +531,8 @@
 
                     <input type="number"
                            name="periods"
+                           min="1"
+                           max="10"
                            placeholder="7">
 
                 </div>
@@ -474,6 +553,38 @@
                     <input type="text"
                            name="lunch"
                            placeholder="1:00 PM - 2:00 PM">
+
+                </div>
+
+                <div>
+
+                    <label>Short Break</label>
+
+                    <input type="text"
+                           name="firstbreak"
+                           placeholder="10:50 AM - 11:00 AM">
+
+                </div>
+
+                <div>
+
+                    <label>Short Break After Period</label>
+
+                    <input type="number"
+                           name="firstbreakafter"
+                           min="0"
+                           placeholder="2">
+
+                </div>
+
+                <div>
+
+                    <label>Lunch After Period</label>
+
+                    <input type="number"
+                           name="lunchafter"
+                           min="0"
+                           placeholder="4">
 
                 </div>
 
@@ -503,104 +614,136 @@
 
     </form>
 
+    {% if error %}
+
+    <div class="notice error-message">
+        {{ error }}
+    </div>
+
+    {% endif %}
+
 
     {% if timetable %}
 
-<div class="card timetable-print-area">
+<div class="print-sheet timetable-print-area">
 
-    <div style="text-align:center; margin-bottom:20px;">
+    <div class="official-header">
 
-        <h1>{{ college }}</h1>
+        <div class="header-badge {% if not cycle %}empty-badge{% endif %}">
+            {% if cycle %}{{ cycle|upper }}{% endif %}
+        </div>
 
-        <h2>DEPARTMENT OF {{ department }}</h2>
+        <div class="college-title">
+            <h1>{{ college or 'NEW HORIZON COLLEGE OF ENGINEERING' }}</h1>
+            <p>{{ affiliation or "Autonomous college affiliated to VTU, Accredited by NBA & NAAC with 'A' grade" }}</p>
+            <h2>DEPARTMENT OF {{ department or 'APPLIED SCIENCES' }}</h2>
+            <h3>TIME TABLE FOR {{ year or '2025-26' }}</h3>
+        </div>
 
-        <h3>CLASS TIME TABLE</h3>
-
-    </div>
-
-    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:20px;">
-
-        <p><b>Semester:</b> {{ semester }}</p>
-
-        <p><b>Section:</b> {{ section }}</p>
-
-        <p><b>Academic Year:</b> {{ year }}</p>
-
-        <p><b>Room No:</b> {{ classroom }}</p>
+        <div class="header-badge room-badge">
+            ROOM NO: {{ classroom or '-' }}
+        </div>
 
     </div>
 
-    <table class="timetable-table">
+    <div class="meta-row">
+        <div>
+            <h2>SECTION : {{ section or '-' }}</h2>
+            <p><b>Semester:</b> {{ semester or '-' }}</p>
+        </div>
+
+        <p><b>Class Teacher :</b> {{ class_teacher or '-' }}</p>
+
+        <p><b>W.E.F:</b> {{ effective_from or '-' }}</p>
+    </div>
+
+    <table class="official-table main-timetable">
 
         <tr>
+            <th>Period</th>
 
-            <th>Time</th>
+            {% for period in period_headers %}
+                {% if loop.index0 == first_break_index %}
+                    <th rowspan="2">BREAK<br>{{ first_break }}</th>
+                {% endif %}
 
-            <th>Monday</th>
+                {% if loop.index0 == lunch_index %}
+                    <th rowspan="2">BREAK<br>{{ lunch_break }}</th>
+                {% endif %}
 
-            <th>Tuesday</th>
-
-            <th>Wednesday</th>
-
-            <th>Thursday</th>
-
-            <th>Friday</th>
-
+                <th>{{ period.number }}</th>
+            {% endfor %}
         </tr>
 
-        {% for row in timetable %}
+        <tr>
+            <th>Day / Time</th>
+
+            {% for period in period_headers %}
+                <th>{{ period.time }}</th>
+            {% endfor %}
+        </tr>
+
+        {% for day in days %}
 
         <tr>
+            <th>{{ day }}</th>
 
-            <td><b>{{ row.time }}</b></td>
+            {% for period in period_headers %}
+                {% if loop.index0 == first_break_index %}
+                    <td class="break-cell">BREAK</td>
+                {% endif %}
 
-            <td>{{ row.Monday|safe }}</td>
+                {% if loop.index0 == lunch_index %}
+                    <td class="break-cell">BREAK</td>
+                {% endif %}
 
-            <td>{{ row.Tuesday|safe }}</td>
-
-            <td>{{ row.Wednesday|safe }}</td>
-
-            <td>{{ row.Thursday|safe }}</td>
-
-            <td>{{ row.Friday|safe }}</td>
-
+                {% set period_index = loop.index0 %}
+                <td>{{ timetable[period_index][day] }}</td>
+            {% endfor %}
         </tr>
 
         {% endfor %}
 
     </table>
 
-    <br>
+    <h3 class="subject-title">Subject details</h3>
 
-    <h3>📚 Subject - Faculty Details</h3>
-
-    <table class="timetable-table">
+    <table class="official-table subject-details-table">
 
         <tr>
-
-            <th>Subject</th>
-
-            <th>Faculty</th>
-
+            <th>Course code</th>
+            <th>Course</th>
+            <th>Name of Faculty</th>
+            <th>Course code</th>
+            <th>Course</th>
+            <th>Name of Faculty</th>
         </tr>
 
-        {% for i in range(1,9) %}
-
-        {% if request.form.get('subject' ~ i) %}
+        {% for pair in subjects|batch(2, none) %}
 
         <tr>
-
-            <td>{{ request.form.get('subject' ~ i) }}</td>
-
-            <td>{{ request.form.get('faculty' ~ i) }}</td>
-
+            {% for subject in pair %}
+                {% if subject %}
+                    <td>{{ subject.code }}</td>
+                    <td>{{ subject.name }}</td>
+                    <td>{{ subject.faculty }}</td>
+                {% else %}
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                {% endif %}
+            {% endfor %}
         </tr>
-
-        {% endif %}
 
         {% endfor %}
 
     </table>
+
+    <div class="signature-row">
+        <p>HOD-{{ department or 'APPLIED SCIENCES' }}</p>
+        <p>DEAN-ACADEMICS</p>
+        <p>PRINCIPAL</p>
+    </div>
 
 </div>
 
